@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── 4-Way Theme System ─── */
+
+/* Default: Dark Gradient */
+:root,
+[data-theme="dark-gradient"] {
+  --bg-primary: 8 12 101;
+  --bg-secondary: 10 14 107;
+  --text-primary: 255 255 255;
+  --text-muted: 200 205 240;
+  --accent-primary: 234 88 12;
+  --accent-primary-end: 249 115 22;
+  --accent-secondary: 249 115 22;
+  /* card-bg: elevated surface above the dark navy background */
+  --card-bg: 20 28 140;
+  /* card-border: subtle lighter-navy border, works at full opacity */
+  --card-border: 50 65 185;
+  --surface-glass: 255 255 255;
+  --logo-filter: brightness(0) saturate(100%) invert(100%) drop-shadow(0 2px 10px rgba(249, 115, 22, 0.35));
+  --scrollbar-track: 7 11 85;
+  --scrollbar-thumb: 249 115 22;
+  /* deck card vars for PockitPromise swipe cards */
+  --deck-card-bg: rgba(255, 255, 255, 0.07);
+  --deck-card-inner-bg: rgba(255, 255, 255, 0.03);
+  --deck-card-border: rgba(255, 255, 255, 0.12);
+  --deck-card-divider: rgba(255, 255, 255, 0.06);
+  /* phone mockup theming */
+  --phone-shell-from: 45 55 72;
+  --phone-shell-to: 13 17 23;
+  --phone-screen: 5 8 16;
+  --phone-header: 15 23 42;
+  --phone-search: 30 41 59;
+  --phone-search-border: 51 65 85;
+  --phone-content: 2 6 23;
+  --phone-card: 15 23 42;
+  --phone-card-border: 30 41 59;
+  --phone-footer: 2 6 23;
+  --phone-divider: 30 41 59;
+  --phone-text: 255 255 255;
+  --phone-subtext: 100 116 139;
+  --phone-btn: 71 85 105;
+  --nav-bg: 18 24 130;
+}
+
+[data-theme="dark-flat"] {
+  --bg-primary: 4 6 51;
+  --bg-secondary: 8 12 101;
+  --text-primary: 255 255 255;
+  --text-muted: 203 213 225;
+  --accent-primary: 249 115 22;
+  --accent-primary-end: 249 115 22;
+  --accent-secondary: 249 115 22;
+  --card-bg: 12 18 88;
+  --card-border: 35 55 145;
+  --surface-glass: 255 255 255;
+  --logo-filter: brightness(0) saturate(100%) invert(100%) drop-shadow(0 2px 10px rgba(249, 115, 22, 0.35));
+  --scrollbar-track: 4 6 51;
+  --scrollbar-thumb: 249 115 22;
+  --deck-card-bg: rgba(255, 255, 255, 0.07);
+  --deck-card-inner-bg: rgba(255, 255, 255, 0.03);
+  --deck-card-border: rgba(255, 255, 255, 0.12);
+  --deck-card-divider: rgba(255, 255, 255, 0.06);
+  --phone-shell-from: 45 55 72;
+  --phone-shell-to: 13 17 23;
+  --phone-screen: 5 8 16;
+  --phone-header: 15 23 42;
+  --phone-search: 30 41 59;
+  --phone-search-border: 51 65 85;
+  --phone-content: 2 6 23;
+  --phone-card: 15 23 42;
+  --phone-card-border: 30 41 59;
+  --phone-footer: 2 6 23;
+  --phone-divider: 30 41 59;
+  --phone-text: 255 255 255;
+  --phone-subtext: 100 116 139;
+  --phone-btn: 71 85 105;
+  --nav-bg: 14 20 90;
+}
+
+[data-theme="light-corporate"] {
+  --bg-primary: 255 255 255;
+  --bg-secondary: 248 250 252;
+  --text-primary: 8 12 101;
+  --text-muted: 51 65 85;
+  --accent-primary: 234 88 12;
+  /* slightly darker end stop for contrast on white */
+  --accent-primary-end: 249 115 22;
+  --accent-secondary: 249 115 22;
+  /* white card on white bg — shadow/border provides separation */
+  --card-bg: 255 255 255;
+  /* soft gray-blue border, visible at full opacity on white */
+  --card-border: 214 220 240;
+  --surface-glass: 8 12 101;
+  --logo-filter: none;
+  --scrollbar-track: 235 238 255;
+  --scrollbar-thumb: 234 88 12;
+  --deck-card-bg: rgba(255, 255, 255, 0.92);
+  --deck-card-inner-bg: rgba(8, 12, 101, 0.03);
+  --deck-card-border: rgba(8, 12, 101, 0.12);
+  --deck-card-divider: rgba(8, 12, 101, 0.06);
+  --phone-shell-from: 210 218 235;
+  --phone-shell-to: 185 198 222;
+  --phone-screen: 246 248 255;
+  --phone-header: 255 255 255;
+  --phone-search: 241 244 251;
+  --phone-search-border: 203 212 232;
+  --phone-content: 241 244 251;
+  --phone-card: 255 255 255;
+  --phone-card-border: 214 220 240;
+  --phone-footer: 255 255 255;
+  --phone-divider: 214 220 240;
+  --phone-text: 8 12 101;
+  --phone-subtext: 100 116 139;
+  --phone-btn: 185 198 222;
+  --nav-bg: 240 241 245;
+}
+
+[data-theme="light-soft"] {
+  --bg-primary: 238 242 255;
+  --bg-secondary: 255 255 255;
+  --text-primary: 10 14 107;
+  --text-muted: 71 85 105;
+  --accent-primary: 249 115 22;
+  --accent-primary-end: 249 115 22;
+  --accent-secondary: 249 115 22;
+  --card-bg: 255 255 255;
+  --card-border: 210 215 245;
+  --surface-glass: 10 14 107;
+  --logo-filter: none;
+  --scrollbar-track: 225 230 255;
+  --scrollbar-thumb: 249 115 22;
+  --deck-card-bg: rgba(255, 255, 255, 0.92);
+  --deck-card-inner-bg: rgba(10, 14, 107, 0.03);
+  --deck-card-border: rgba(10, 14, 107, 0.12);
+  --deck-card-divider: rgba(10, 14, 107, 0.06);
+  --phone-shell-from: 215 222 245;
+  --phone-shell-to: 190 200 230;
+  --phone-screen: 248 250 255;
+  --phone-header: 255 255 255;
+  --phone-search: 238 242 255;
+  --phone-search-border: 210 215 245;
+  --phone-content: 238 242 255;
+  --phone-card: 255 255 255;
+  --phone-card-border: 210 215 245;
+  --phone-footer: 255 255 255;
+  --phone-divider: 210 215 245;
+  --phone-text: 10 14 107;
+  --phone-subtext: 100 116 139;
+  --phone-btn: 190 200 230;
+  --nav-bg: 232 235 242;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: rgb(var(--text-primary));
+  background: rgb(var(--bg-primary));
+}
+
+@media (min-width: 768px) {
+  body {
+    background-image: radial-gradient(circle at 1px 1px, rgb(var(--text-primary) / 0.025) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+}
+
+@layer utilities {
+  .app-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .app-scrollbar::-webkit-scrollbar-track {
+    background: rgb(var(--scrollbar-track, 7 11 85));
+  }
+
+  .app-scrollbar::-webkit-scrollbar-thumb {
+    background: rgb(var(--scrollbar-thumb, 249 115 22));
+    border-radius: 3px;
+  }
+
+  .app-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--scrollbar-thumb, 249 115 22)) rgb(var(--scrollbar-track, 7 11 85));
+  }
+}

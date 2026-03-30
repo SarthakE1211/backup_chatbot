@@ -22,6 +22,9 @@
 /build
 /dist
 
+# cPanel deploy bundle (regenerate with npm run zip:cpanel)
+/public/pockit-cpanel-site.zip
+
 # Misc
 .DS_Store
 *.pem

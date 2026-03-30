@@ -7,7 +7,7 @@ export const SITE_META = {
 
 // ─── Header ──────────────────────────────────────────────────────────────────
 export const NAV_LINKS = [
-    { label: "Services", href: "#services" },
+    { label: "Services", href: "#download" },
     { label: "How It Works", href: "#how-it-works" },
     { label: "Our Promise", href: "#promise" },
     { label: "Testimonials", href: "#testimonials" },
@@ -18,7 +18,7 @@ export const HEADER = {
     loginLabel: "Login",
     loginHref: "https://my.pockitengineers.com",
     bookLabel: "Book a Service",
-    bookHref: "#services",
+    bookHref: "#download",
     themeToggleLabel: "Toggle Theme",
     themeDarkLabel: "Dark",
     themeLightLabel: "Light",
@@ -273,7 +273,7 @@ export const EXPERT_BELOW = {
     subheading: "We bring the customers. You bring the craft. Get verified, set your schedule, and grow your practice with India's trusted network of on-demand IT professionals.",
 };
 
-/** Urban Company–style long-form expert page (structure + IT-focused copy) */
+/** Join as a Technician — hero copy */
 export const EXPERT_PAGE_UC = {
     hero: {
         headline: "Become a Pockit Expert",
@@ -281,123 +281,6 @@ export const EXPERT_PAGE_UC = {
         body: "Pockit helps you get regular work, clear payments, and a system you can rely on. No chasing customers, no uncertainty — just steady jobs based on your skills.",
         cta: "Join as a Technician",
     },
-    stats: [
-        { value: "500+", label: "Experts in the network" },
-        { value: "Weekly", label: "Transparent payouts" },
-        { value: "~10 min", label: "Avg. response time" },
-    ],
-    sectionNav: [
-        { id: "categories", label: "Categories" },
-        { id: "how-it-works", label: "How it works" },
-        { id: "how-to-join", label: "How to join" },
-        { id: "expert-faqs", label: "FAQs" },
-    ],
-    categories: {
-        title: "Join us in these IT categories",
-        items: [
-            {
-                title: "Instant Help",
-                desc: "Quick remote troubleshooting for urgent app, software, and account issues.",
-            },
-            {
-                title: "Laptop",
-                desc: "Performance tune-ups, malware cleanup, OS issues, and everyday laptop fixes.",
-            },
-            {
-                title: "MacBook",
-                desc: "macOS troubleshooting, storage optimization, updates, and backup setup.",
-            },
-            {
-                title: "Desktop",
-                desc: "Boot issues, restart loops, hardware diagnosis, and desktop optimization.",
-            },
-            {
-                title: "Printer",
-                desc: "Printer setup, driver issues, connectivity problems, and sharing setup.",
-            },
-            {
-                title: "WFH Setup",
-                desc: "Home workspace setup with WiFi checks, device setup, and basic security.",
-            },
-            {
-                title: "Smart TV",
-                desc: "Internet setup, OTT app configuration, casting fixes, and TV optimization.",
-            },
-            {
-                title: "Smart Phone",
-                desc: "New phone setup, data transfer, storage cleanup, and app troubleshooting.",
-            },
-            {
-                title: "Kids Safe (Kaspersky)",
-                desc: "Parental controls, content filtering, and safe digital setup for children.",
-            },
-            {
-                title: "CCTV",
-                desc: "New camera installations, no-feed fixes, and remote viewing configuration.",
-            },
-        ],
-    },
-    howItWorks: {
-        title: "How Pockit works for experts",
-        steps: [
-            {
-                title: "Set when you work",
-                desc: "Share your availability and service areas so we can route the right jobs to you.",
-            },
-            {
-                title: "We line up jobs",
-                desc: "Get matched to nearby requests that fit your skills — no chasing leads manually.",
-            },
-            {
-                title: "Deliver great service",
-                desc: "Work 1:1 with customers on-site and represent Pockit with professionalism.",
-            },
-            {
-                title: "Get paid reliably",
-                desc: "Weekly payouts with clear job history — focus on the work, not paperwork.",
-            },
-        ],
-    },
-    howToJoin: {
-        title: "Join Pockit in a few simple steps",
-        steps: [
-            {
-                title: "Apply on WhatsApp",
-                desc: "Tap Join Us — our bot collects your basics and preferred IT categories.",
-            },
-            {
-                title: "Verification",
-                desc: "Complete ID checks and skill validation as per Pockit standards.",
-            },
-            {
-                title: "Go live",
-                desc: "Once approved, start receiving verified IT jobs through the partner flow.",
-            },
-        ],
-    },
-    ctaBand: {
-        title: "Aap kaam karo. Pockit system sambhalta hai.",
-        sub: "Start Earning Today",
-        cta: "Join as a Technician",
-    },
-    faqs: [
-        {
-            q: "What are the working hours?",
-            a: "You choose slots that work for you. Pockit routes jobs based on your availability and service areas.",
-        },
-        {
-            q: "Do I need prior experience?",
-            a: "Yes — we're looking for professionals who can independently diagnose and fix IT issues in their categories. Relevant experience or certifications help.",
-        },
-        {
-            q: "What documents do I need?",
-            a: "Typically government ID, proof of address, and any relevant certifications. Our team will confirm the exact list during onboarding.",
-        },
-        {
-            q: "How fast can I get started?",
-            a: "After you apply on WhatsApp, verification timelines vary — many experts move through onboarding within a few days.",
-        },
-    ],
 } as const;
 
 // ─── FAQ ──────────────────────────────────────────────────────────────────────

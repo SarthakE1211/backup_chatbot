@@ -6,8 +6,11 @@
     "node": ">=24.0.0"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --webpack",
+    "dev:turbo": "next dev",
+    "dev:low": "NODE_OPTIONS=--max-old-space-size=2048 next dev --webpack",
     "build": "next build",
+    "zip:cpanel": "rm -f public/pockit-cpanel-site.zip && npm run build && cd out && zip -r ../public/pockit-cpanel-site.zip . -x \"*.DS_Store\" -x \"**/.DS_Store\"",
     "start": "next start",
     "preview:static": "npx --yes serve@latest out -l 3000",
     "lint": "eslint ."

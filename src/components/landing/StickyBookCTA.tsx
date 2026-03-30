@@ -30,7 +30,7 @@ export default function StickyBookCTA() {
                     className="fixed bottom-6 right-6 z-50"
                 >
                     <a
-                        href="#services"
+                        href="#download"
                         className="flex items-center gap-2 text-white font-semibold shadow-2xl transition-all duration-300"
                         style={{
                             padding: showLabel ? "12px 24px" : "14px",

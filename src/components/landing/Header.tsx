@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { MouseEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Moon, Sun } from "lucide-react";
 import { NAV_LINKS, HEADER } from "@/constants/copy";
@@ -46,6 +47,16 @@ export default function Header() {
         localStorage.setItem("pockit-theme", newTheme);
     };
     const logoSrc = theme === THEMES.dark ? "/images/OG%20Logo.svg" : "/images/blue_brand_logo.svg";
+    const handleLogoClick = (e: MouseEvent<HTMLAnchorElement>) => {
+        if (!isHome) return;
+        e.preventDefault();
+        const appScroller = document.querySelector(".app-scrollbar") as HTMLElement | null;
+        if (appScroller) {
+            appScroller.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
 
     return (
         <motion.header
@@ -70,6 +81,7 @@ export default function Header() {
                     <Link
                         href="/"
                         className="flex items-center gap-2"
+                        onClick={handleLogoClick}
                     >
                         <Image
                             src={logoSrc}

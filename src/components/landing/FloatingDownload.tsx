@@ -4,11 +4,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FLOATING_DOWNLOAD } from "@/constants/copy";
 import { useScrollTop } from "@/hooks/useScrollTop";
-import { useIsMobile } from "@/hooks/useIsMobile";
 
 export default function FloatingStoreCTA() {
     const [visible, setVisible] = useState(false);
-    const isMobile = useIsMobile();
 
     useScrollTop((scrollTop, el) => {
         const isNearBottom = el.scrollHeight - scrollTop - el.clientHeight < 320;
@@ -23,15 +21,9 @@ export default function FloatingStoreCTA() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 30, scale: 0.92 }}
                     transition={{ type: "spring", stiffness: 200, damping: 22 }}
-                    className="fixed z-50 flex flex-row items-center justify-center gap-2.5 p-2.5 w-[calc(100%-48px)] sm:w-auto left-6 right-6 sm:right-auto sm:left-6
-                               rounded-2xl bg-theme-card/95 border border-theme-border/70 shadow-[0_18px_45px_rgba(15,23,42,0.35)] text-theme-text"
-                    style={{
-                        bottom: isMobile ? 88 : 24,
-                        ...(!isMobile && {
-                            backdropFilter: "blur(16px) saturate(180%)",
-                            WebkitBackdropFilter: "blur(16px) saturate(180%)",
-                        }),
-                    }}
+                    className="hidden md:flex fixed z-50 flex-row items-center justify-center gap-2.5 p-2.5 w-[calc(100%-48px)] sm:w-auto left-6 right-6 sm:right-auto sm:left-6 bottom-6
+                               rounded-2xl bg-theme-card/95 border border-theme-border/70 shadow-[0_18px_45px_rgba(15,23,42,0.35)] text-theme-text
+                               backdrop-blur-xl"
                 >
                     <a
                         href="https://play.google.com/store/apps/details?id=com.pockitcust"

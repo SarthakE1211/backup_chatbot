@@ -11,7 +11,7 @@ export default function DownloadBand() {
     const inView = useInView(ref, { once: true, margin: "-80px" });
 
     return (
-        <section className="relative overflow-hidden">
+        <section id="download" className="relative overflow-hidden">
             <div
                 className="absolute inset-0 z-0 bg-theme-bg"
                 style={{

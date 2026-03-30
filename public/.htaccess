@@ -1,0 +1,8 @@
+# Apache / cPanel — copied into `out/` on `npm run build`
+# Ensures 301 for legacy path (SEO); static HTML fallback is `src/app/expert/page.tsx`
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^expert/?$ /become-a-technician [R=301,L]
+    RewriteRule ^expert\.html$ /become-a-technician [R=301,L]
+</IfModule>

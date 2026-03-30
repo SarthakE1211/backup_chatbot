@@ -123,27 +123,36 @@ Open [http://localhost:3000](http://localhost:3000).
 ### Scripts
 
 - `npm run dev` — start dev server.
-- `npm run build` — production build.
-- `npm run start` — run production server.
+- `npm run build` — production build (static export → `out/` folder).
+- `npm run start` — **not used** with static export (Next.js will error; use `preview:static` to test the `out/` folder locally).
+- `npm run preview:static` — serve the `out/` folder locally (after `npm run build`).
 - `npm run lint` — lint codebase.
 
 ---
 
 ## Deployment Notes
 
-This is a standard Next.js app; deploy built output (not dev server).
+This project uses **`output: 'export'`** in `next.config.mjs`: `npm run build` writes a static site to **`out/`** (HTML, CSS, JS, assets). No Node server is required in production.
 
-### Vercel (recommended)
-1. Import the repo in Vercel.
-2. Framework preset: Next.js (auto-detected).
-3. Use default build/start (`npm run build`, `npm run start`).
-4. Ensure Node version is compatible with `>=24`.
+Full cPanel / `public_html` steps: **`CPANEL_STATIC.md`**.
 
-### Self-hosted Node
+### Static hosting (cPanel, S3, Netlify, etc.)
+
 1. `npm ci`
 2. `npm run build`
-3. `npm run start`
-4. Put behind Nginx/Caddy with TLS and process manager (PM2/systemd).
+3. Upload **everything inside** `out/` to the web root (e.g. cPanel **public_html**).
+
+### Vercel
+
+1. Import the repo in Vercel.
+2. Framework preset: Next.js (auto-detected).
+3. Build: `npm run build`; output is static from `out/` (no `npm run start`).
+
+Ensure Node version is compatible with `>=24`.
+
+### Self-hosted Node (optional)
+
+Only needed if you **remove** `output: 'export'` and run a full Next server. See **`GODADDY_DEPLOYMENT.md`** for a VPS + Nginx + PM2 example.
 
 ---
 

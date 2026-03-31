@@ -10,6 +10,7 @@ import { Moon, Sun } from "lucide-react";
 import { NAV_LINKS, HEADER } from "@/constants/copy";
 import { useScrollTop } from "@/hooks/useScrollTop";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useBookServiceNav } from "@/hooks/useBookServiceNav";
 
 const THEMES = {
     dark: "dark-gradient",
@@ -24,17 +25,18 @@ export default function Header() {
     const [open, setOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [theme, setTheme] = useState(() => {
-        if (typeof window === "undefined") return "dark-gradient";
-        return localStorage.getItem("pockit-theme") || "dark-gradient";
+        if (typeof window === "undefined") return "light-corporate";
+        return localStorage.getItem("pockit-theme") || "light-corporate";
     });
     const isMobile = useIsMobile();
+    const onBookService = useBookServiceNav();
 
     useEffect(() => {
         const saved = localStorage.getItem("pockit-theme");
         if (saved) {
             document.documentElement.setAttribute("data-theme", saved);
         } else {
-            document.documentElement.setAttribute("data-theme", "dark-gradient");
+            document.documentElement.setAttribute("data-theme", "light-corporate");
         }
     }, []);
 
@@ -47,12 +49,30 @@ export default function Header() {
         localStorage.setItem("pockit-theme", newTheme);
     };
     const logoSrc = theme === THEMES.dark ? "/images/OG%20Logo.svg" : "/images/blue_brand_logo.svg";
+    const scrollToSection = (hash: string) => {
+        const id = hash.replace(/^#/, "");
+        const target = document.getElementById(id);
+        if (!target) return;
+        const appScroller = document.querySelector(".app-scrollbar") as HTMLElement | null;
+        if (appScroller) {
+            appScroller.scrollTo({ top: Math.max(0, target.offsetTop - 84), behavior: "smooth" });
+            window.history.replaceState(null, "", `/#${id}`);
+            return;
+        }
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+    const handleNavLinkClick = (href: string, e: MouseEvent<HTMLAnchorElement>) => {
+        if (!href.startsWith("#") || !isHome) return;
+        e.preventDefault();
+        scrollToSection(href);
+    };
     const handleLogoClick = (e: MouseEvent<HTMLAnchorElement>) => {
         if (!isHome) return;
         e.preventDefault();
         const appScroller = document.querySelector(".app-scrollbar") as HTMLElement | null;
         if (appScroller) {
             appScroller.scrollTo({ top: 0, behavior: "smooth" });
+            window.history.replaceState(null, "", "/");
             return;
         }
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -99,6 +119,7 @@ export default function Header() {
                             <Link
                                 key={link.label}
                                 href={navHref(link.href)}
+                                onClick={(e) => handleNavLinkClick(link.href, e)}
                                 className="px-4 py-2 text-[16px] font-medium rounded-lg transition-colors duration-200 text-theme-text/75 hover:text-theme-accent-end hover:bg-theme-text/5"
                                 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                             >
@@ -115,12 +136,13 @@ export default function Header() {
                         >
                             {theme === THEMES.dark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                         </button>
-                        <a
-                            href={HEADER.loginHref}
+                        <Link
+                            href="/#download"
+                            onClick={onBookService}
                             className="text-[16px] font-medium transition-colors duration-200 px-4 py-2 text-theme-text/70 hover:text-theme-accent-end"
                         >
                             {HEADER.loginLabel}
-                        </a>
+                        </Link>
                         {isExpertPage ? (
                             <a
                                 href="https://wa.me/918882280156"
@@ -139,7 +161,8 @@ export default function Header() {
                             </a>
                         ) : (
                             <Link
-                                href={navHref(HEADER.bookHref)}
+                                href="/#download"
+                                onClick={onBookService}
                                 className="inline-flex items-center gap-2 text-[16px] font-semibold text-white transition-all duration-200 hover:scale-[1.03] hover:brightness-110"
                                 style={{
                                     padding: "9px 22px",
@@ -186,19 +209,26 @@ export default function Header() {
                                 <Link
                                     key={link.label}
                                     href={navHref(link.href)}
-                                    onClick={() => setOpen(false)}
+                                    onClick={(e) => {
+                                        handleNavLinkClick(link.href, e);
+                                        setOpen(false);
+                                    }}
                                     className="px-4 py-3 text-base font-medium rounded-xl transition-colors duration-200 text-theme-text/70 hover:text-theme-accent-end                                     hover:bg-theme-text/5"
                                 >
                                     {link.label}
                                 </Link>
                             ))}
                             <div className="h-px my-3 bg-theme-text/10" />
-                            <a
-                                href={HEADER.loginHref}
+                            <Link
+                                href="/#download"
+                                onClick={(e) => {
+                                    onBookService(e);
+                                    setOpen(false);
+                                }}
                                 className="px-4 py-3 text-base font-medium rounded-xl transition-colors text-theme-text/70 hover:bg-theme-text/5"
                             >
                                 {HEADER.loginLabel}
-                            </a>
+                            </Link>
                             <button
                                 onClick={toggleTheme}
                                 className="flex items-center justify-between w-full px-4 py-3 text-base font-medium rounded-xl transition-colors text-theme-text/70 hover:bg-theme-text/5 text-left"

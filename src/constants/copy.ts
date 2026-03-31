@@ -15,8 +15,9 @@ export const NAV_LINKS = [
 ];
 
 export const HEADER = {
-    loginLabel: "Login",
-    loginHref: "https://my.pockitengineers.com",
+    loginLabel: "Get the app",
+    /** In-app: use `/#download` so hash works from any route */
+    loginHref: "/#download",
     bookLabel: "Book a Service",
     bookHref: "#download",
     themeToggleLabel: "Toggle Theme",
@@ -189,7 +190,7 @@ export const REVIEWS = [
     { name: "Vikram Rathi", text: "The CCTV installation was super clean. Cables hidden perfectly, works flawlessly from the app.", rating: 5, city: "Chennai", source: "Google Play", avatar: "/avatars/vikram.jpg" },
     { name: "Anjali Deshmukh", text: "The tracking feature in the app is brilliant — I knew exactly when my expert would arrive.", rating: 5, city: "Pune", source: "App Store", avatar: "/avatars/anjali.jpg" },
     { name: "Karthik Nair", text: "Honest pricing, no surprise charges. Fixed my MacBook fan issue in under an hour. Highly recommend.", rating: 5, city: "Bangalore", source: "Google Play", avatar: "/avatars/karthik.jpg" },
-    { name: "Meera Pandey", text: "Smart TV setup done in 20 minutes including wall mounting. The engineer was extremely skilled.", rating: 5, city: "Mumbai", source: "Verified", avatar: "/avatars/meera.svg" },
+    { name: "Meera Pandey", text: "Smart TV setup done in 20 minutes. The engineer was extremely skilled.", rating: 5, city: "Mumbai", source: "Verified", avatar: "/avatars/meera.svg" },
 ];
 
 // ─── Download Band ────────────────────────────────────────────────────────────
@@ -222,20 +223,19 @@ export const FOOTER = {
         "Bharat's only dedicated IT on-demand service app. Background-verified experts at your door in under 10 minutes.",
     copyright: `© ${new Date().getFullYear()} Pockit Engineers. All rights reserved.`,
     bookCTA: "Book a Service",
-    bookHref: "#services",
+    bookHref: "/#download",
     whatsappHref: "https://wa.me/918882280156",
-    portalHref: "https://my.pockitengineers.com",
 };
 
 export const FOOTER_LINKS = [
     {
         title: "Services",
         links: [
-            { label: "Laptop Repair", href: "#services" },
-            { label: "WiFi Setup", href: "#services" },
-            { label: "Smart TV Setup", href: "#services" },
-            { label: "CCTV Installation", href: "#services" },
-            { label: "Data Recovery", href: "#services" },
+            { label: "Laptop Repair", href: "/#download" },
+            { label: "WiFi Setup", href: "/#download" },
+            { label: "Smart TV Setup", href: "/#download" },
+            { label: "CCTV Installation", href: "/#download" },
+            { label: "Data Recovery", href: "/#download" },
         ],
     },
     {
@@ -249,7 +249,7 @@ export const FOOTER_LINKS = [
     {
         title: "Support",
         links: [
-            { label: "Login to Portal", href: "https://my.pockitengineers.com" },
+            { label: "Download app", href: "/#download" },
             { label: "Privacy Policy", href: "/privacy-policy" },
             { label: "Terms & Conditions", href: "/terms" },
         ],
@@ -307,7 +307,7 @@ export const FAQ_ITEMS = [
     },
     {
         q: "How do I contact Pockit support?",
-        a: "You can reach us via WhatsApp at +91 88822 80156, or through the Help section in the app or web portal at my.pockitengineers.com. Our support team is available 7 days a week.",
+        a: "You can reach us via WhatsApp at +91 88822 80156, or through the Help section in the Pockit app. Our support team is available 7 days a week.",
     },
     {
         q: "How do I become a Pockit technician?",
@@ -315,7 +315,7 @@ export const FAQ_ITEMS = [
     },
     {
         q: "How fast can a technician reach my location?",
-        a: "Our average response time is under 10 minutes from booking confirmation. Once you book via the app or web portal, a background-verified expert is dispatched immediately — with live tracking so you know exactly when they'll arrive.",
+        a: "Our average response time is under 10 minutes from booking confirmation. Once you book via the app, a background-verified expert is dispatched immediately — with live tracking so you know exactly when they'll arrive.",
     },
     {
         q: "Which cities is Pockit available in?",
@@ -331,7 +331,7 @@ export const FAQ_ITEMS = [
     },
     {
         q: "Can I cancel or reschedule a booking?",
-        a: "Yes. You can cancel or reschedule a booking anytime before the technician is dispatched, directly from the app or web portal — free of charge. Once the expert is en-route, cancellation may be subject to a small convenience fee.",
+        a: "Yes. You can cancel or reschedule a booking anytime before the technician is dispatched, directly from the app — free of charge. Once the expert is en-route, cancellation may be subject to a small convenience fee.",
     },
     {
         q: "What if I'm not satisfied with the service?",

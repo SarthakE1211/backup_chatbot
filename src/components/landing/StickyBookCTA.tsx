@@ -1,14 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useScrollTop } from "@/hooks/useScrollTop";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useBookServiceNav } from "@/hooks/useBookServiceNav";
 
 export default function StickyBookCTA() {
     const [visible, setVisible] = useState(false);
     const [expanded, setExpanded] = useState(false);
     const isMobile = useIsMobile();
+    const onBookService = useBookServiceNav();
 
     useScrollTop((scrollTop, el) => {
         const isNearBottom = el.scrollHeight - scrollTop - el.clientHeight < 300;
@@ -29,8 +32,9 @@ export default function StickyBookCTA() {
                     onMouseLeave={() => setExpanded(false)}
                     className="fixed bottom-6 right-6 z-50"
                 >
-                    <a
-                        href="#download"
+                    <Link
+                        href="/#download"
+                        onClick={onBookService}
                         className="flex items-center gap-2 text-white font-semibold shadow-2xl transition-all duration-300"
                         style={{
                             padding: showLabel ? "12px 24px" : "14px",
@@ -55,7 +59,7 @@ export default function StickyBookCTA() {
                                 </motion.span>
                             )}
                         </AnimatePresence>
-                    </a>
+                    </Link>
                 </motion.div>
             )}
         </AnimatePresence>

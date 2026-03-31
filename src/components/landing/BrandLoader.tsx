@@ -18,7 +18,7 @@ export default function BrandLoader({ onComplete }: BrandLoaderProps) {
         if (typeof document === "undefined") return;
 
         const syncTheme = () => {
-            const theme = document.documentElement.getAttribute("data-theme") || "dark-gradient";
+            const theme = document.documentElement.getAttribute("data-theme") || "light-corporate";
             setIsDark(theme.startsWith("dark"));
         };
 

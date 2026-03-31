@@ -11,6 +11,8 @@ export default function ThemeSync() {
         const saved = localStorage.getItem("pockit-theme");
         if (saved) {
             document.documentElement.setAttribute("data-theme", saved);
+        } else {
+            document.documentElement.setAttribute("data-theme", "light-corporate");
         }
     }, []);
     return null;

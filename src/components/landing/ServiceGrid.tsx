@@ -15,7 +15,7 @@ const SERVICES = [
         isFast: true,
         img: "/images/service-instant.png",
         desc: "Instant Help is for those urgent tech problems where you just need someone to sort it out quickly, often without a full visit. Pockit connects you to an expert who can offer fast remote guidance for app glitches, minor settings issues, account problems and other quick fixes.",
-        features: ["Quick remote fix (15–30 mins)", "App or software help", "Email / account issues"]
+        features: ["Quick remote fix (10–15 mins)", "App or software help", "Email / account issues"]
     },
     {
         id: "laptop",
@@ -129,7 +129,7 @@ function ServiceCard({ service }: { service: (typeof SERVICES)[0] }) {
             {service.isFast && (
                 <div className="absolute top-5 right-5 z-20 bg-orange-500 text-white shadow-lg text-[10px] font-extrabold px-3 py-1.5 rounded-full flex items-center gap-1.5 tracking-widest uppercase whitespace-nowrap">
                     <Zap className="w-3.5 h-3.5 fill-current" />
-                    10 Min
+                    10 Mins
                 </div>
             )}
 

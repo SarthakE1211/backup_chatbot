@@ -23,8 +23,6 @@ const wordVariants: Variants = {
     }),
 };
 
-// Variants for the phone float + floating cards — controlled via animation controls
-// so IntersectionObserver can start/stop them without triggering React re-renders.
 const phoneFloatVariants: Variants = {
     idle: { y: 0 },
     animate: { y: [0, -6, 0], transition: { duration: 6, repeat: Infinity, ease: "easeInOut" } },
@@ -65,8 +63,6 @@ export default function Hero() {
     const bgOpacity = useTransform(scrollProgress, [0, 0.9], [1, 0.6]);
 
     const phoneRef = useRef<HTMLDivElement>(null);
-    // Animation controls for phone float + cards — driven by IntersectionObserver
-    // directly, bypassing React state to avoid re-renders during active animations.
     const phoneControls = useAnimation();
 
     useScrollTop((scrollTop) => {
@@ -115,12 +111,6 @@ export default function Hero() {
             />
 
             <div className="relative w-full max-w-[92rem] mx-auto px-6 sm:px-8 lg:px-10 py-20 sm:py-28 lg:py-32 grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-12 lg:gap-24 items-center">
-                {/*
-                 * Text column — all entrance animations use whileInView so that
-                 * framer-motion drives them internally without React re-renders.
-                 * Previously these used animate={textInView ? X : Y} which triggered
-                 * a React setState→re-render cascade during the page fade-in.
-                 */}
                 <motion.div style={{ y: textY }} className="flex flex-col max-w-2xl z-10 mt-6 sm:mt-0">
                     <motion.div
                         initial={{ opacity: 0, y: -20, scale: 0.9 }}
@@ -136,7 +126,7 @@ export default function Hero() {
                         <span className="text-xs font-bold text-theme-accent tracking-wide uppercase">{HERO.badge}</span>
                     </motion.div>
 
-                    <h1 className="text-5xl sm:text-7xl lg:text-[88px] font-black tracking-tighter leading-[1.05] text-theme-text mb-6 drop-shadow-sm" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                    <h1 className="text-5xl sm:text-7xl lg:text-[88px] font-black tracking-tighter leading-[1.12] text-theme-text mb-6 drop-shadow-sm pb-3" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                         {headline.map((line, li) => (
                             <span key={li} className="block">
                                 {line.split(" ").map((word, wi) => (
@@ -147,7 +137,7 @@ export default function Hero() {
                                         initial="hidden"
                                         whileInView="visible"
                                         viewport={TEXT_VIEWPORT}
-                                        className={`inline-block mr-3 sm:mr-4 ${li === 1 ? "text-transparent bg-clip-text bg-gradient-to-br from-theme-accent via-theme-accent to-theme-accent-end" : ""}`}
+                                        className={`inline-block mr-3 sm:mr-4 pr-1 ${li === 1 ? "text-transparent bg-clip-text bg-gradient-to-br from-theme-accent via-theme-accent to-theme-accent-end pb-1" : ""}`}
                                     >
                                         {word}
                                     </motion.span>
@@ -236,12 +226,6 @@ export default function Hero() {
                     </motion.div>
                 </motion.div>
 
-                {/*
-                 * Phone column — entrance animation is a one-shot spring (unchanged).
-                 * Float + floating-card infinite animations use useAnimation controls
-                 * driven by a raw IntersectionObserver so that starting/stopping them
-                 * does not trigger React re-renders during the entrance animation phase.
-                 */}
                 <motion.div
                     ref={phoneRef}
                     initial={{ opacity: 0, scale: 0.9, rotateY: -20, y: 100 }}

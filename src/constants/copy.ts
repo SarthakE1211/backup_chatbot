@@ -171,7 +171,7 @@ export const TESTIMONIALS_SECTION = {
     sectionPill: "Testimonials",
     heading: "What Our Customers",
     headingHighlight: "Say",
-    subheading: "Don't just take our word for it. Here's what thousands of happy customers have to say about their PockIT experience.",
+    subheading: "Don't just take our word for it. Here's what thousands of happy customers have to say about their Pockit experience.",
 };
 
 // ─── Social Proof (legacy ticker — kept for reference) ────────────────────────
@@ -183,14 +183,12 @@ export const SOCIAL_PROOF = {
 };
 
 export const REVIEWS = [
-    { name: "Tanaya Sahasrabhojane", text: "Highly recommended for quick, reliable, and hassle-free tech support at home! Fantastic app for at-home laptop and IT service! The interface is super easy to navigate, and booking takes just minutes. The technician that came was quite professional and efficient. Even the required replacement was arranged and completed on the same day, which was incredibly convenient. Best of all, the pricing is very affordable for the quality and convenience provided.", rating: 5, city: "Pune", source: "Verified", avatar: "" },
-    { name: "Priya Malhotra", text: "WiFi setup was completely smooth. The engineer explained everything and left no mess behind.", rating: 5, city: "Mumbai", source: "App Store", avatar: "/avatars/priya.jpg" },
-    { name: "Amit Kapoor", text: "Very professional and courteous. First time I've hired someone online and felt completely safe.", rating: 5, city: "Bangalore", source: "Google Play", avatar: "/avatars/amit.jpg" },
-    { name: "Sneha Verma", text: "Saved my presentation! Called at 7 AM and an expert was at my door by 8:15. Rapid response.", rating: 5, city: "Hyderabad", source: "Verified", avatar: "/avatars/sneha.jpg" },
-    { name: "Vikram Rathi", text: "The CCTV installation was super clean. Cables hidden perfectly, works flawlessly from the app.", rating: 5, city: "Chennai", source: "Google Play", avatar: "/avatars/vikram.jpg" },
-    { name: "Anjali Deshmukh", text: "The tracking feature in the app is brilliant — I knew exactly when my expert would arrive.", rating: 5, city: "Pune", source: "App Store", avatar: "/avatars/anjali.jpg" },
-    { name: "Karthik Nair", text: "Honest pricing, no surprise charges. Fixed my MacBook fan issue in under an hour. Highly recommend.", rating: 5, city: "Bangalore", source: "Google Play", avatar: "/avatars/karthik.jpg" },
-    { name: "Meera Pandey", text: "Smart TV setup done in 20 minutes. The engineer was extremely skilled.", rating: 5, city: "Mumbai", source: "Verified", avatar: "/avatars/meera.svg" },
+    { name: "Tanaya Sahasrabhojane", text: "Highly recommended for quick, reliable, and hassle-free tech support at home! Fantastic app for at-home laptop and IT service! The interface is super easy to navigate, and booking takes just minutes.", rating: 5, city: "Pune", source: "Verified", avatar: "/images/tanya.jpg", image: "/images/tanya.jpg" },
+    { name: "Yashodhan Pawar", text: "Pockit is a very reliable and well-designed app. It runs smoothly, feels easy to use and makes handling service requests much simpler.", rating: 5, city: "Pune", source: "Verified", avatar: "/images/Yashodhan.jpg", image: "/images/Yashodhan.jpg" },
+    { name: "Aarya Kenjale", text: "Pockit's made things a lot simpler for me. They handle all my software and hardware issues, and when I accidentally wiped my macOS, their service executive came home and fixed it almost immediately. Everything was back up and running without any downtime. Highly recommend!!", rating: 5, city: "Pune", source: "Verified", avatar: "/images/Aarya.jpg", image: "/images/Aarya.jpg" },
+    { name: "Kartik Ambokar", text: "Impressed with the professionalism. The engineer explained the problem clearly, suggested the best option, and got my laptop running like new.", rating: 5, city: "Mumbai", source: "Verified", avatar: "/images/Kartik.jpg", image: "/images/Kartik.jpg" },
+    { name: "Tanmay Kesarkar", text: "Service ka experience kaafi smooth tha. Booking easy thi, technician time par aaya aur bina kisi hassle ke issue fix kar diya.", rating: 5, city: "Mumbai", source: "Verified", avatar: "/images/Tanmay.JPG.jpeg", image: "/images/Tanmay.JPG.jpeg" },
+    { name: "Amit Phadke", text: "The App is fast and reliable laptop repairs at home! The app is easy to use, the technician arrived on time, and fixed my issue in a single visit at a very reasonable price.", rating: 5, city: "Powai, Mumbai", source: "Verified", avatar: "/images/Amit.jpg", image: "/images/Amit.jpg" },
 ];
 
 // ─── Download Band ────────────────────────────────────────────────────────────
@@ -292,7 +290,7 @@ export const FAQ_SECTION = {
 };
 
 export const FAQ_ITEMS = [
-    
+
     {
         q: "Is there a warranty on repairs?",
         a: "Yes, we provide a 30-day service warranty on all completed jobs. If the same issue recurs within the warranty period, we'll fix it again at no extra cost.",
@@ -319,7 +317,7 @@ export const FAQ_ITEMS = [
     },
     {
         q: "Which cities is Pockit available in?",
-        a: "Pockit Engineers is currently live in Delhi NCR, Mumbai, and Noida. We're rapidly expanding — stay tuned for your city!",
+        a: "Pockit Engineers is currently live in Delhi NCR, Mumbai, Pune, and Noida. We're rapidly expanding — stay tuned for your city!",
     },
     {
         q: "Are the technicians background-verified?",

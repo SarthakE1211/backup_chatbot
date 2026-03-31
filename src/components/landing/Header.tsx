@@ -136,13 +136,6 @@ export default function Header() {
                         >
                             {theme === THEMES.dark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                         </button>
-                        <Link
-                            href="/#download"
-                            onClick={onBookService}
-                            className="text-[16px] font-medium transition-colors duration-200 px-4 py-2 text-theme-text/70 hover:text-theme-accent-end"
-                        >
-                            {HEADER.loginLabel}
-                        </Link>
                         {isExpertPage ? (
                             <a
                                 href="https://wa.me/918882280156"
@@ -219,16 +212,6 @@ export default function Header() {
                                 </Link>
                             ))}
                             <div className="h-px my-3 bg-theme-text/10" />
-                            <Link
-                                href="/#download"
-                                onClick={(e) => {
-                                    onBookService(e);
-                                    setOpen(false);
-                                }}
-                                className="px-4 py-3 text-base font-medium rounded-xl transition-colors text-theme-text/70 hover:bg-theme-text/5"
-                            >
-                                {HEADER.loginLabel}
-                            </Link>
                             <button
                                 onClick={toggleTheme}
                                 className="flex items-center justify-between w-full px-4 py-3 text-base font-medium rounded-xl transition-colors text-theme-text/70 hover:bg-theme-text/5 text-left"

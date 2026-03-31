@@ -29,7 +29,7 @@ export default function RootLayout({
             are correct on first paint — prevents theme colour flash */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem('pockit-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}`,
+            __html: `try{var t=localStorage.getItem('pockit-theme');if(t)document.documentElement.setAttribute('data-theme',t);else document.documentElement.setAttribute('data-theme','light-corporate');}catch(e){}`,
           }}
         />
         {children}

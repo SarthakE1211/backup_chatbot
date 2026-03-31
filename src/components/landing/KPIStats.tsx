@@ -1,7 +1,8 @@
 "use client";
 
 import { motion, useInView, useMotionValue, useTransform, animate } from "framer-motion";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
+import Image from "next/image";
 import { Users, Clock, BadgeCheck } from "lucide-react";
 import SectionPill from "./SectionPill";
 import { KPI_STATS } from "@/constants/copy";
@@ -13,9 +14,11 @@ interface CounterProps {
     icon: React.ReactNode;
     delay: number;
     inView: boolean;
+    illustrationSrc?: string;
+    isDarkTheme: boolean;
 }
 
-function Counter({ target, suffix, label, icon, delay, inView }: CounterProps) {
+function Counter({ target, suffix, label, icon, delay, inView, illustrationSrc, isDarkTheme }: CounterProps) {
     const count = useMotionValue(0);
     const rounded = useTransform(count, (v) => {
         if (target >= 1000) return Math.round(v).toLocaleString("en-IN");
@@ -38,12 +41,41 @@ function Counter({ target, suffix, label, icon, delay, inView }: CounterProps) {
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
-            className="relative flex flex-col items-center text-center p-8 sm:p-10 rounded-3xl border border-dashed border-theme-accent/20 bg-theme-glass/[0.03] hover:border-theme-accent/40 hover:shadow-[0_0_30px_rgb(var(--accent-primary)/0.08)] transition-all duration-300"
+            className="relative overflow-hidden flex min-h-[300px] sm:min-h-[330px] flex-col items-center justify-center text-center p-10 sm:p-12 rounded-3xl border border-dashed border-theme-accent/20 bg-theme-glass/[0.03] hover:border-theme-accent/40 hover:shadow-[0_0_30px_rgb(var(--accent-primary)/0.08)] transition-all duration-300"
         >
-            <div className="w-12 h-12 rounded-2xl bg-theme-accent/10 border border-theme-accent/20 flex items-center justify-center text-theme-accent mb-5">
+            {illustrationSrc && (
+                <div
+                    className="pointer-events-none absolute inset-0 transition-all duration-300"
+                    style={{
+                        background: isDarkTheme
+                            ? "radial-gradient(circle at 78% 18%, rgb(var(--accent-primary) / 0.18), transparent 42%)"
+                            : "radial-gradient(circle at 78% 18%, rgb(var(--accent-primary) / 0.1), transparent 46%)",
+                    }}
+                    aria-hidden
+                >
+                    <div
+                        className="absolute -right-2 -bottom-2 h-36 w-36 sm:h-44 sm:w-44"
+                        style={{
+                            opacity: isDarkTheme ? 0.22 : 0.14,
+                            filter: isDarkTheme
+                                ? "grayscale(0.35) saturate(0.95) brightness(1.08)"
+                                : "grayscale(0.42) saturate(0.9) brightness(0.95)",
+                        }}
+                    >
+                        <Image
+                            src={illustrationSrc}
+                            alt=""
+                            fill
+                            className="object-contain object-bottom-right"
+                            unoptimized
+                        />
+                    </div>
+                </div>
+            )}
+            <div className="relative z-10 w-12 h-12 rounded-2xl bg-theme-accent/10 border border-theme-accent/20 flex items-center justify-center text-theme-accent mb-5">
                 {icon}
             </div>
-            <div className="flex items-baseline gap-1 mb-2">
+            <div className="relative z-10 flex items-baseline gap-1 mb-2">
                 <motion.span
                     className="text-4xl sm:text-5xl font-black tracking-tight"
                     style={{
@@ -66,7 +98,7 @@ function Counter({ target, suffix, label, icon, delay, inView }: CounterProps) {
                     {suffix}
                 </span>
             </div>
-            <p className="text-[13px] sm:text-[14px] text-theme-text/50 font-medium">
+            <p className="relative z-10 text-[13px] sm:text-[14px] text-theme-text/50 font-medium">
                 {label}
             </p>
         </motion.div>
@@ -76,6 +108,18 @@ function Counter({ target, suffix, label, icon, delay, inView }: CounterProps) {
 export default function KPIStats() {
     const ref = useRef<HTMLDivElement>(null);
     const inView = useInView(ref, { once: true, margin: "-100px" });
+    const [isDarkTheme, setIsDarkTheme] = useState(false);
+
+    useEffect(() => {
+        const syncTheme = () => {
+            const currentTheme = document.documentElement.getAttribute("data-theme") || "light-corporate";
+            setIsDarkTheme(currentTheme.startsWith("dark"));
+        };
+        syncTheme();
+        const observer = new MutationObserver(syncTheme);
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+        return () => observer.disconnect();
+    }, []);
 
     const ICON_COMPONENTS = [Users, Clock, BadgeCheck];
     const stats = KPI_STATS.stats.map((s, i) => {
@@ -118,7 +162,20 @@ export default function KPIStats() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
                     {stats.map((stat, i) => (
-                        <Counter key={stat.label} {...stat} delay={i * 0.15} inView={inView} />
+                        <Counter
+                            key={stat.label}
+                            {...stat}
+                            delay={i * 0.15}
+                            inView={inView}
+                            isDarkTheme={isDarkTheme}
+                            illustrationSrc={
+                                i === 0
+                                    ? "/images/Customers%20Served.svg"
+                                    : i === 1
+                                        ? "/images/AvgResponse_Time.svg"
+                                        : "/images/Verified%20Technicians.svg"
+                            }
+                        />
                     ))}
                 </div>
             </div>

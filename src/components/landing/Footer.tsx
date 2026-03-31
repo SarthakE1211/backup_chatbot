@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { FOOTER, FOOTER_LINKS } from "@/constants/copy";
+import { useBookServiceNav } from "@/hooks/useBookServiceNav";
 
 const THEMES = {
     dark: "dark-gradient",
@@ -16,11 +17,12 @@ export default function Footer() {
     const pathname = usePathname();
     const isHome = pathname === "/";
     const linkHref = (href: string) => (href.startsWith("#") && !isHome ? `/${href}` : href);
+    const onBookService = useBookServiceNav();
     const [theme, setTheme] = useState(() => {
-        if (typeof window === "undefined") return "dark-gradient";
+        if (typeof window === "undefined") return "light-corporate";
         const saved = localStorage.getItem("pockit-theme");
         if (saved) return saved;
-        return document.documentElement.getAttribute("data-theme") || "dark-gradient";
+        return document.documentElement.getAttribute("data-theme") || "light-corporate";
     });
 
     useEffect(() => {
@@ -154,7 +156,8 @@ export default function Footer() {
                         {FOOTER.copyright}
                     </p>
                     <motion.a
-                        href={linkHref(FOOTER.bookHref)}
+                        href="/#download"
+                        onClick={onBookService}
                         whileHover={{ scale: 1.04, boxShadow: "0 0 24px rgb(var(--accent-primary)/0.35)" }}
                         whileTap={{ scale: 0.97 }}
                         className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-[13px] font-bold text-white shadow-lg transition-all duration-200 hover:brightness-110"

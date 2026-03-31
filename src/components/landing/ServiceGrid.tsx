@@ -105,8 +105,7 @@ function ServiceCard({ service }: { service: (typeof SERVICES)[0] }) {
 
     return (
         <a
-            href="https://my.pockitengineers.com"
-            target="_blank"
+            href="#download"
             rel="noopener noreferrer"
             className="group relative flex flex-col w-full h-[480px] sm:h-[500px] rounded-[32px] overflow-hidden hover:-translate-y-2 transition-transform duration-500"
             style={{ boxShadow: "0 20px 40px rgba(0,0,0,0.4)" }}
@@ -130,7 +129,7 @@ function ServiceCard({ service }: { service: (typeof SERVICES)[0] }) {
             {service.isFast && (
                 <div className="absolute top-5 right-5 z-20 bg-orange-500 text-white shadow-lg text-[10px] font-extrabold px-3 py-1.5 rounded-full flex items-center gap-1.5 tracking-widest uppercase whitespace-nowrap">
                     <Zap className="w-3.5 h-3.5 fill-current" />
-                    15 Min
+                    10 Min
                 </div>
             )}
 
@@ -201,7 +200,7 @@ export default function ServiceGrid() {
                 </div>
 
                 {/* Grid Services */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 justify-items-center mt-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 justify-items-center mt-10">
                     {SERVICES.map((service, i) => (
                         <motion.div
                             key={`${service.id}-${i}`}

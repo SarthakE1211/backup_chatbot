@@ -45,7 +45,7 @@ export const HERO = {
     floatingCard1Title: "Laptop Repair",
     floatingCard1Price: "₹299+",
     floatingCard2Title: "Expert Booked!",
-    floatingCard2Subtitle: "Arrives in ~10 min",
+    floatingCard2Subtitle: "Arrives in ~10 mins",
     floatingCard3Title: "Smart TV Setup",
     floatingCard3Price: "₹349+",
 };
@@ -99,7 +99,7 @@ export const PHONE_BROWSE = {
 
 export const PHONE_TRACKING = {
     heading: "Expert on the way",
-    eta: "Arriving in ~12 min",
+    eta: "Arriving in ~12 mins",
     expertInitials: "RK",
     expertName: "Rajesh Kumar",
     expertRating: "⭐ 4.9",
@@ -108,7 +108,7 @@ export const PHONE_TRACKING = {
 
 export const PHONE_PAYMENT = {
     heading: "Service Complete ✓",
-    subheading: "Laptop Repair — 45 min",
+    subheading: "Laptop Repair — 45 mins",
     allDone: "All Done!",
     ratePrompt: "Rate your experience",
     lineItem1Label: "Screen Repair",
@@ -128,7 +128,7 @@ export const KPI_STATS = {
     subheading: "Thousands of homes already trust Pockit with their tech.",
     stats: [
         { target: 10113, suffix: "", label: "Customers Served" },
-        { target: 10, suffix: " min", label: "Avg Response Time" },
+        { target: 10, suffix: " mins", label: "Avg Response Time" },
         { target: 562, suffix: "", label: "Verified Technicians" },
     ],
 };

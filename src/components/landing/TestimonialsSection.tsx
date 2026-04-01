@@ -347,7 +347,7 @@ export default function TestimonialsSection() {
 
     // Stat data: pull from KPI_STATS but display as simple strings
     const stats = [
-        { value: "10", suffix: " min", label: KPI_STATS.stats[1].label },   // Avg Response Time
+        { value: "10", suffix: " mins", label: KPI_STATS.stats[1].label },   // Avg Response Time
         { value: "562", suffix: "", label: KPI_STATS.stats[2].label },      // Verified Technicians
         { value: "10,113", suffix: "", label: KPI_STATS.stats[0].label },   // Customers Served
     ];

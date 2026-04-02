@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Header from "@/components/landing/Header";
 import Hero from "@/components/landing/Hero";
 import ScrollProgress from "@/components/landing/ScrollProgress";
+import Chatbot from "@/components/chatbot/Chatbot";
 
 const ServiceGrid = dynamic(() => import("@/components/landing/ServiceGrid"));
 const HowItWorks = dynamic(() => import("@/components/landing/HowItWorks"));
@@ -38,6 +39,7 @@ export default function AppShell() {
             <Footer />
             <FloatingStoreCTA />
             <StickyBookCTA />
+            <Chatbot />
         </motion.main>
     );
 }

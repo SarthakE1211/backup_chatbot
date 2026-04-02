@@ -18,16 +18,20 @@ export default function Footer() {
     const isHome = pathname === "/";
     const linkHref = (href: string) => (href.startsWith("#") && !isHome ? `/${href}` : href);
     const onBookService = useBookServiceNav();
-    const [theme, setTheme] = useState(() => {
-        if (typeof window === "undefined") return "light-corporate";
-        const saved = localStorage.getItem("pockit-theme");
-        if (saved) return saved;
-        return document.documentElement.getAttribute("data-theme") || "light-corporate";
-    });
+    const [theme, setTheme] = useState(THEMES.light);
 
     useEffect(() => {
+        if (typeof window === "undefined") return;
+
+        const saved = localStorage.getItem("pockit-theme");
+        const initialTheme = saved || document.documentElement.getAttribute("data-theme") || THEMES.light;
+
+        document.documentElement.setAttribute("data-theme", initialTheme);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setTheme(initialTheme);
+
         const obs = new MutationObserver(() => {
-            setTheme(document.documentElement.getAttribute("data-theme") || "dark-gradient");
+            setTheme(document.documentElement.getAttribute("data-theme") || THEMES.dark);
         });
         obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 

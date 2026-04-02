@@ -24,20 +24,19 @@ export default function Header() {
     const navHref = (href: string) => (isHome ? href : `/${href}`);
     const [open, setOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
-    const [theme, setTheme] = useState(() => {
-        if (typeof window === "undefined") return "light-corporate";
-        return localStorage.getItem("pockit-theme") || "light-corporate";
-    });
+    const [theme, setTheme] = useState(THEMES.light);
+    const [hydrated, setHydrated] = useState(false);
     const isMobile = useIsMobile();
     const onBookService = useBookServiceNav();
 
     useEffect(() => {
         const saved = localStorage.getItem("pockit-theme");
-        if (saved) {
-            document.documentElement.setAttribute("data-theme", saved);
-        } else {
-            document.documentElement.setAttribute("data-theme", "light-corporate");
-        }
+        const initialTheme = saved || THEMES.light;
+
+        document.documentElement.setAttribute("data-theme", initialTheme);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setTheme(initialTheme);
+        setHydrated(true);
     }, []);
 
     useScrollTop((scrollTop) => { setScrolled(scrollTop > 40); });
@@ -48,7 +47,9 @@ export default function Header() {
         document.documentElement.setAttribute("data-theme", newTheme);
         localStorage.setItem("pockit-theme", newTheme);
     };
-    const logoSrc = theme === THEMES.dark ? "/images/OG%20Logo.svg" : "/images/blue_brand_logo.svg";
+
+    const effectiveTheme = hydrated ? theme : THEMES.light;
+    const logoSrc = effectiveTheme === THEMES.dark ? "/images/OG%20Logo.svg" : "/images/blue_brand_logo.svg";
     const scrollToSection = (hash: string) => {
         const id = hash.replace(/^#/, "");
         const target = document.getElementById(id);
@@ -134,7 +135,7 @@ export default function Header() {
                             className="p-2 mr-2 rounded-full hover:bg-theme-text/5 text-theme-text/70 transition-colors"
                             aria-label={HEADER.themeToggleLabel}
                         >
-                            {theme === THEMES.dark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                            {effectiveTheme === THEMES.dark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                         </button>
                         {isExpertPage ? (
                             <a
@@ -216,8 +217,8 @@ export default function Header() {
                                 onClick={toggleTheme}
                                 className="flex items-center justify-between w-full px-4 py-3 text-base font-medium rounded-xl transition-colors text-theme-text/70 hover:bg-theme-text/5 text-left"
                             >
-                                <span>Theme: {theme === THEMES.dark ? HEADER.themeDarkLabel : HEADER.themeLightLabel}</span>
-                                {theme === THEMES.dark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                                <span>Theme: {effectiveTheme === THEMES.dark ? HEADER.themeDarkLabel : HEADER.themeLightLabel}</span>
+                                {effectiveTheme === THEMES.dark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                             </button>
                             <div className="mt-3 flex flex-col gap-2">
                                 <a

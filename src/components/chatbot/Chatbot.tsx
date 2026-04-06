@@ -179,15 +179,34 @@ export default function Chatbot() {
                                 <span className="cbot-online" />
                             </div>
                             <div>
-                                <p className="cbot-name">PockIt ChatBot</p>
+                                <p className="cbot-name">Chip</p>
                                 <p className="cbot-sub">Your Personal Tech Assistant</p>
                             </div>
                         </div>
-                        <button className="cbot-close-btn" onClick={toggleChat} aria-label="Close">
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                            </svg>
-                        </button>
+                        <div className="flex flexdirection-row gap-3">
+                            <button className="cbot-close-btn" onClick={() => window.location.reload()} aria-label="Reset">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                                    <path
+                                        d="M21 12a9 9 0 1 1-3-6.7"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                    />
+                                    <polyline
+                                        points="21 3 21 9 15 9"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+                                </svg>
+                            </button>
+                            <button className="cbot-close-btn" onClick={toggleChat} aria-label="Close">
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                    <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
                     {/* ── Messages ── */}
@@ -378,15 +397,17 @@ export default function Chatbot() {
             {/* ── FAB ── */}
             <div className="cbot-fab-wrap">
                 <div className={`cbot-trigger ${isOpen ? "is-open" : ""}`}>
+                    {/* {!isOpen && <span className="cbot-ping" />}
+                    {!isOpen && <span className="cbot-ping-2" />} */}
                     {!isOpen && <span className="cbot-fab-label" style={{
-                        background: theme === THEMES.dark ? "#ea580c" : "#3b3fa8",
+                        background: theme === THEMES.dark ? "#ed793a" : "#0d129c",
                         color: "white",
-                    }}>Pockit Chatbot</span>}
+                    }}>Chat with Chip</span>}
                     <div className="cbot-fab-icon-wrap">
                         {!isOpen && <span className="cbot-ping" />}
                         {!isOpen && <span className="cbot-ping-2" />}
                         {!isOpen && !hasOpened && <span className="cbot-notif" style={{
-                            background: theme === THEMES.dark ? "#ea580c" : "#3b3fa8",
+                            background: theme === THEMES.dark ? "#ed793a" : "#0d129c",
                             color: "white",
                         }}>1</span>}
                         <button
@@ -395,24 +416,26 @@ export default function Chatbot() {
                             onClick={toggleChat}
                             aria-label={isOpen ? "Close chatbot" : "Open chatbot"}
                             style={{
-                                background: theme === THEMES.dark ? "#ea580c" : "#3b3fa8",
+                                background: theme === THEMES.dark ? "#ed793a" : "#0d129c",
                                 color: "white",
+                                width: "48px",
+                                height: "48px",
                             }}
                         >
                             {isOpen
                                 ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-                                : <svg width="26" height="26" viewBox="0 0 64 64" fill="currentColor">
-                                    <rect x="12" y="10" width="40" height="28" rx="8" />
-                                    <circle cx="23" cy="24" r="5" fill="white" />
-                                    <circle cx="41" cy="24" r="5" fill="white" />
-                                    <circle cx="24" cy="24" r="2.5" fill="#3b3fa8" />
-                                    <circle cx="42" cy="24" r="2.5" fill="#3b3fa8" />
-                                    <rect x="22" y="32" width="20" height="3" rx="1.5" fill="white" opacity="0.8" />
-                                    <rect x="28" y="38" width="8" height="5" rx="2" />
-                                    <rect x="14" y="43" width="36" height="18" rx="6" />
-                                    <rect x="20" y="49" width="8" height="6" rx="2" fill="white" opacity="0.3" />
-                                    <rect x="36" y="49" width="8" height="6" rx="2" fill="white" opacity="0.3" />
-                                </svg>
+                                : <Image
+                                    src={
+                                        theme === THEMES.dark
+                                            ? "/svg/orange_chat_icon.svg"
+                                            : "/svg/Blue_chat_icon.svg"
+                                    }
+                                    alt="Pockit Engineers"
+                                    width={700}
+                                    height={730}
+                                    className="w-full h-auto"
+                                    priority
+                                />
                             }
                         </button>
                     </div>

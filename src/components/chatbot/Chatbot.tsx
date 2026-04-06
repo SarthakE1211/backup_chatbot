@@ -138,7 +138,7 @@ export default function Chatbot() {
         <Image
             src={
                 theme === THEMES.dark
-                    ? "/svg/Orange_chat_icon.svg"
+                    ? "/svg/orange_chat_icon.svg"
                     : "/svg/Blue_chat_icon.svg"
             }
             alt="Pockit Engineers"
@@ -167,7 +167,7 @@ export default function Chatbot() {
                                 <Image
                                     src={
                                         theme === THEMES.dark
-                                            ? "/svg/Orange_chat_icon.svg"
+                                            ? "/svg/orange_chat_icon.svg"
                                             : "/svg/Blue_chat_icon.svg"
                                     }
                                     alt="Pockit Engineers"
@@ -360,7 +360,7 @@ export default function Chatbot() {
                         <Image
                             src={
                                 theme === THEMES.dark
-                                    ? "/svg/Orange_chat_icon.svg"
+                                    ? "/svg/orange_chat_icon.svg"
                                     : "/svg/Blue_chat_icon.svg"
 
                             }

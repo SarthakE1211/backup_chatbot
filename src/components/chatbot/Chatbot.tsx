@@ -2,16 +2,16 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChatApiService } from "@/services/chatApiService";
-import { ChatApiResponse, ChatMessage } from "@/services/chatbot.models";
-
+import { ChatMessage } from "@/services/chatbot.models";
+import Image from "next/image";
 
 const initialChips = [
-    "My laptop is slow",
+    "Laptop is slow",
+    "PC won't start",
     "Printer not working",
-    "WiFi is weak",
-    "How much does it cost?",
-    "Book a service",
-    "What areas do you cover?",
+    "MacBook battery issue",
+    "CCTV camera offline",
+
 ];
 
 const langMap: Record<string, string> = {
@@ -21,26 +21,16 @@ const langMap: Record<string, string> = {
     Telugu: "te-IN",
 };
 
-const normalizeLang = (lang: string) => {
-    const map: Record<string, string> = {
-        english: "en",
-        hindi: "hi",
-        tamil: "ta",
-        telugu: "te",
-    };
-    return map[lang.toLowerCase()] || lang.toLowerCase();
+const getTime = () =>
+    new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+const GREETING =
+    "Hi there! I'm Chip, your personal tech assistant. What device needs attention today? Pick a quick option above or describe your issue.";
+
+const THEMES = {
+    dark: "dark-gradient",
+    light: "light-corporate"
 };
-
-const getTime = () => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-
-const computeGreeting = () => {
-    const h = new Date().getHours();
-    if (h >= 5 && h < 12) return { text: "Good Morning", emoji: "🌅" };
-    if (h >= 12 && h < 17) return { text: "Good Afternoon", emoji: "☀️" };
-    if (h >= 17 && h < 21) return { text: "Good Evening", emoji: "🌇" };
-    return { text: "Good Night", emoji: "🌙" };
-};
-
 export default function Chatbot() {
     const [isOpen, setIsOpen] = useState(false);
     const [hasOpened, setHasOpened] = useState(false);
@@ -50,351 +40,382 @@ export default function Chatbot() {
     const [inputText, setInputText] = useState("");
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [followUpChips, setFollowUpChips] = useState<string[]>([]);
-    const [lang, setLang] = useState("English");
-    const [greeting] = useState(() => computeGreeting());
+    const [lang] = useState("English");
+    const [greetTime] = useState(() => getTime());
 
-    const scrollToBottomRef = useRef(false);
     const messagesAreaRef = useRef<HTMLDivElement>(null);
     const recognitionRef = useRef<any>(null);
+    const [theme, setTheme] = useState(THEMES.light);
 
     useEffect(() => {
-        if (scrollToBottomRef.current && messagesAreaRef.current) {
-            const el = messagesAreaRef.current;
-            el.scrollTop = el.scrollHeight;
-            scrollToBottomRef.current = false;
+        if (typeof window === "undefined") return;
+
+        const saved = localStorage.getItem("pockit-theme");
+        const initialTheme = saved || document.documentElement.getAttribute("data-theme") || THEMES.light;
+
+        document.documentElement.setAttribute("data-theme", initialTheme);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setTheme(initialTheme);
+
+        const obs = new MutationObserver(() => {
+            setTheme(document.documentElement.getAttribute("data-theme") || THEMES.dark);
+        });
+        obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+        return () => obs.disconnect();
+    }, []);
+
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+            setSpeechSupported(!!SR);
         }
-    }, [messages]);
+    }, []);
 
     useEffect(() => {
-        return () => {
-            if (recognitionRef.current) recognitionRef.current.stop?.();
-        };
+        if (messagesAreaRef.current) {
+            messagesAreaRef.current.scrollTop = messagesAreaRef.current.scrollHeight;
+        }
+    }, [messages, isLoading, followUpChips]);
+
+    useEffect(() => {
+        return () => { if (recognitionRef.current) recognitionRef.current.stop?.(); };
     }, []);
 
     const toggleChat = () => {
         if (!isOpen) setHasOpened(true);
-        setIsOpen(prev => !prev);
-        if (!isOpen) {
-            scrollToBottomRef.current = true;
-        }
+        setIsOpen((prev) => !prev);
     };
 
     const toggleListening = () => {
-        if (isListening) {
-            recognitionRef.current?.stop?.();
-            setIsListening(false);
-            return;
-        }
-
+        if (isListening) { recognitionRef.current?.stop?.(); setIsListening(false); return; }
         const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
         if (!SR) return;
-
         const recognition = new SR();
         recognition.lang = langMap[lang] || "en-IN";
         recognition.interimResults = true;
         recognition.continuous = false;
-
         recognition.onstart = () => setIsListening(true);
-
         recognition.onresult = (e: any) => {
-            const transcript = Array.from(e.results)
-                .map((r: any) => r[0].transcript)
-                .join("");
-            setInputText(transcript);
+            setInputText(Array.from(e.results).map((r: any) => r[0].transcript).join(""));
         };
-
         recognition.onerror = () => setIsListening(false);
         recognition.onend = () => setIsListening(false);
         recognition.start();
-
         recognitionRef.current = recognition;
     };
 
-    const sendMessage = useCallback(
-        async (overrideText?: string) => {
-            const text = (overrideText !== undefined ? overrideText : inputText).trim();
-            if (!text) return;
-
-            const userMessage: ChatMessage = {
-                type: "user",
-                text,
+    const sendMessage = useCallback(async (overrideText?: string) => {
+        const text = (overrideText !== undefined ? overrideText : inputText).trim();
+        if (!text) return;
+        const userMsg: ChatMessage = { type: "user", text, time: getTime() };
+        setMessages((prev) => [...prev, userMsg]);
+        setInputText("");
+        setFollowUpChips([]);
+        setIsLoading(true);
+        const history = [...messages, userMsg].slice(-6).map((m) => ({ type: m.type, text: m.text }));
+        try {
+            const parsed = await ChatApiService.getResponse(text, lang, history);
+            setMessages((prev) => [...prev, {
+                type: "bot",
+                text: parsed.message || "Sorry, I couldn't get a response.",
+                service: parsed.service ?? null,
+                showHumanHandoff: !!parsed.showHumanHandoff,
+                isError: false,
                 time: getTime(),
-            };
+            }]);
+            setFollowUpChips(parsed.followUpChips ?? []);
+        } catch {
+            setMessages((prev) => [...prev, { type: "bot", text: "", isError: true, time: getTime() }]);
+            setFollowUpChips(["Call support", "Send email", "Try again"]);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [inputText, lang, messages]);
 
-            setMessages(prev => [...prev, userMessage]);
-            setInputText("");
-            setFollowUpChips([]);
-            setIsLoading(true);
-            scrollToBottomRef.current = true;
-
-            const currentHistory = [...messages, userMessage]
-                .slice(-6)
-                .map(m => ({ type: m.type, text: m.text }));
-
-            try {
-                const parsed = await ChatApiService.getResponse(text, lang, currentHistory);
-
-                const botMessage: ChatMessage = {
-                    type: "bot",
-                    text: parsed.message || "Sorry, I couldn't get a response.",
-                    service: parsed.service ?? null,
-                    showHumanHandoff: !!parsed.showHumanHandoff,
-                    isError: false,
-                    time: getTime(),
-                };
-
-                setMessages(prev => [...prev, botMessage]);
-                setFollowUpChips(parsed.followUpChips ?? []);
-            } catch (err) {
-                console.error("[Chatbot] error", err);
-                setMessages(prev => [...prev, { type: "bot", text: "", isError: true, time: getTime() }]);
-                setFollowUpChips(["Call support", "Send email", "Try again"]);
-            } finally {
-                setIsLoading(false);
-                scrollToBottomRef.current = true;
+    const PELogo = ({ size = 20 }: { size?: number }) => (
+        <Image
+            src={
+                theme === THEMES.dark
+                    ? "/svg/Orange_chat_icon.svg"
+                    : "/svg/Blue_chat_icon.svg"
             }
-        },
-        [inputText, lang, messages]
+            alt="Pockit Engineers"
+            width={30}
+            height={30}
+            // className="w-full h-auto"
+            priority
+        />
     );
 
-    const controlLabel = isListening ? "Listening..." : "Describe your issue...";
-
     return (
-        <div className="chatbot-wrapper" aria-live="polite">
+        <div className={`cbot-wrap ${isOpen ? "is-open" : ""}`}>
+
             {isOpen && (
-                <div className="chat-window">
-                    <div className="chat-header">
-                        <div className="chat-header-left">
-                            <div className="avatar-wrap">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 64 64" fill="currentColor">
-                                    <rect x="30" y="2" width="4" height="8" rx="2" />
-                                    <circle cx="32" cy="2" r="3" />
+                <div className="cbot-window">
+
+                    {/* ── Header ── */}
+                    <div
+                        className="cbot-header"
+                        style={{
+                            background: theme === THEMES.dark ? "#ea580c" : "#3b3fa8",
+                        }}
+                    >                        <div className="cbot-header-left">
+                            <div className="cbot-av-outer">
+                                {/* <div className="cbot-av-inner"><PELogo size={22} /></div> */}
+                                <Image
+                                    src={
+                                        theme === THEMES.dark
+                                            ? "/svg/Orange_chat_icon.svg"
+                                            : "/svg/Blue_chat_icon.svg"
+                                    }
+                                    alt="Pockit Engineers"
+                                    width={600}
+                                    height={168}
+                                    className="w-full h-auto"
+                                    priority
+                                />
+                                <span className="cbot-online" />
+                            </div>
+                            <div>
+                                <p className="cbot-name">PockIt ChatBot</p>
+                                <p className="cbot-sub">Your Personal Tech Assistant</p>
+                            </div>
+                        </div>
+                        <button className="cbot-close-btn" onClick={toggleChat} aria-label="Close">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    {/* ── Messages ── */}
+                    <div className="cbot-messages" ref={messagesAreaRef}>
+
+                        {messages.length === 0 && (
+                            <>
+                                <div className="cbot-chips-grid">
+                                    {initialChips.map((chip) => (
+                                        <button key={chip} className="cbot-chip" type="button" onClick={() => sendMessage(chip)}>
+                                            {chip}
+                                        </button>
+                                    ))}
+                                </div>
+                                <hr className="cbot-divider" />
+                                <div className="cbot-row">
+                                    <div className="cbot-msg-av"><PELogo size={15} /></div>
+                                    <div className="cbot-body">
+                                        <div className="cbot-bubble cbot-bot-bubble">{GREETING}</div>
+                                        <span className="cbot-time">{greetTime}</span>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                        {messages.map((msg, i) => (
+                            <div key={i} className={`cbot-row ${msg.type === "user" ? "cbot-user-row" : ""}`}>
+                                {msg.type === "bot" && (
+                                    <div className="cbot-msg-av"><PELogo size={15} /></div>
+                                )}
+                                <div className="cbot-body">
+                                    {msg.isError ? (
+                                        <div className="cbot-error">
+                                            <p className="cbot-err-title">⚠️ Something went wrong</p>
+                                            <p className="cbot-err-sub">Our AI is temporarily unavailable.</p>
+                                            <div className="cbot-err-actions">
+                                                <a href="tel:+919240251266" className="cbot-err-call">📞 +91 92402 51266</a>
+                                                <a href="mailto:itsupport@pockitengineers.com" className="cbot-err-email">✉ Email</a>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div
+                                            className={`cbot-bubble ${msg.type === "user" ? "cbot-user-bubble" : "cbot-bot-bubble"
+                                                }`}
+                                            style={{
+                                                background:
+                                                    msg.type === "user"
+                                                        ? theme === THEMES.dark
+                                                            ? "#ea580c"
+                                                            : "#3b3fa8"
+                                                        : theme === THEMES.dark
+                                                            ? "#f3f4f6"
+                                                            : "#f3f4f6",
+                                            }}
+                                        >                                            {msg.text}
+                                        </div>
+                                    )}
+                                    {msg.type === "bot" && !msg.isError && msg.service && (
+                                        <div className="cbot-service-card">
+                                            <div className="cbot-sc-head">
+                                                <span>{msg.service.name}</span>
+                                                <span>ID #{msg.service.id}</span>
+                                            </div>
+                                            <div className="cbot-sc-body">
+                                                {msg.service.price && <span className="cbot-sc-price">{msg.service.price}</span>}
+                                                {msg.service.duration && <span className="cbot-tag cbot-tag-blue">⏱ {msg.service.duration}</span>}
+                                                {msg.service.mode && <span className={`cbot-tag ${msg.service.mode.includes("Remote") ? "cbot-tag-blue" : "cbot-tag-orange"}`}>{msg.service.mode}</span>}
+                                                {msg.service.warranty && <span className="cbot-tag cbot-tag-green">✓ {msg.service.warranty}</span>}
+                                            </div>
+                                            <div className="cbot-sc-foot">
+                                                <a className="cbot-book-btn" href={`/book?serviceId=${msg.service.id}`}>Book Now →</a>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {msg.type === "bot" && !msg.isError && msg.showHumanHandoff && (
+                                        <div className="cbot-handoff">
+                                            <div>
+                                                <p className="cbot-ho-title">Need a human? We are here!</p>
+                                                <p className="cbot-ho-hours">Mon–Sun · 10 AM–7 PM</p>
+                                            </div>
+                                            <div className="cbot-ho-btns">
+                                                <a href="tel:+919240251266" className="cbot-ho-call">📞 Call</a>
+                                                <a href="mailto:itsupport@pockitengineers.com" className="cbot-ho-email">✉ Email</a>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <span className={`cbot-time ${msg.type === "user" ? "cbot-time-r" : ""}`}>{msg.time}</span>
+                                </div>
+                                {msg.type === "user" && (
+                                    <div
+                                        className="cbot-msg-av cbot-user-av"
+                                        style={{
+                                            background:
+                                                theme === THEMES.dark ? "#ea580c" : "#3b3fa8",
+                                            color: "white",
+                                        }}
+                                    >                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="white">
+                                            <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
+                                        </svg>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+
+                        {isLoading && (
+                            <div className="cbot-row">
+                                <div className="cbot-msg-av"><PELogo size={15} /></div>
+                                <div className="cbot-body">
+                                    <div className="cbot-bubble cbot-bot-bubble">
+                                        <div className="cbot-typing"><span /><span /><span /></div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {!isLoading && followUpChips.length > 0 && (
+                            <div className="cbot-followup">
+                                {followUpChips.map((chip) => (
+                                    <button key={chip} className="cbot-chip cbot-chip-sm" type="button" onClick={() => sendMessage(chip)}>{chip}</button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* ── Input ── */}
+                    <div className="cbot-input-area">
+                        {isListening && (
+                            <div className="cbot-listening">
+                                <span className="cbot-l-dot" /> Listening...
+                            </div>
+                        )}
+                        <div className="cbot-input-row">
+                            <input
+                                className="cbot-input"
+                                type="text"
+                                value={inputText}
+                                onChange={(e) => setInputText(e.target.value)}
+                                onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                                placeholder={isListening ? "Listening..." : "Describe your issue..."}
+                                disabled={isLoading}
+                            />
+                            <div className="cbot-input-btns">
+                                {speechSupported && (
+                                    <button
+                                        className={`cbot-icon-btn cbot-mic ${isListening ? "active" : ""}`}
+                                        type="button"
+                                        onClick={toggleListening}
+                                        disabled={isLoading}
+                                    >
+                                        {isListening
+                                            ? <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2" /></svg>
+                                            : <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4zm7 10a1 1 0 0 1 1 1 8 8 0 0 1-7 7.938V21h2a1 1 0 1 1 0 2H9a1 1 0 1 1 0-2h2v-1.062A8 8 0 0 1 4 12a1 1 0 1 1 2 0 6 6 0 1 0 12 0 1 1 0 0 1 1-1z" /></svg>
+                                        }
+                                    </button>
+                                )}
+                                <button
+                                    className="cbot-icon-btn cbot-send"
+                                    type="button"
+                                    onClick={() => sendMessage()}
+                                    disabled={isLoading || !inputText.trim()}
+                                >
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2z" /></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ── Footer ── */}
+                    <div className="cbot-footer">
+                        <Image
+                            src={
+                                theme === THEMES.dark
+                                    ? "/svg/Orange_chat_icon.svg"
+                                    : "/svg/Blue_chat_icon.svg"
+                            }
+                            alt="Pockit Engineers"
+                            width={30}
+                            height={30}
+                            // className="w-full h-auto"
+                            priority
+                        />
+                        <span className="cbot-footer-txt">Chip by Pockit · Powered by AI</span>
+                    </div>
+                </div>
+            )}
+
+            {/* ── FAB ── */}
+            <div className="cbot-fab-wrap">
+                <div className={`cbot-trigger ${isOpen ? "is-open" : ""}`}>
+                    {!isOpen && <span className="cbot-fab-label" style={{
+                        background: theme === THEMES.dark ? "#ea580c" : "#3b3fa8",
+                        color: "white",
+                    }}>Pockit Chatbot</span>}
+                    <div className="cbot-fab-icon-wrap">
+                        {!isOpen && <span className="cbot-ping" />}
+                        {!isOpen && <span className="cbot-ping-2" />}
+                        {!isOpen && !hasOpened && <span className="cbot-notif" style={{
+                            background: theme === THEMES.dark ? "#ea580c" : "#3b3fa8",
+                            color: "white",
+                        }}>1</span>}
+                        <button
+                            className={`cbot-fab ${isOpen ? "is-open" : ""}`}
+                            type="button"
+                            onClick={toggleChat}
+                            aria-label={isOpen ? "Close chatbot" : "Open chatbot"}
+                            style={{
+                                background: theme === THEMES.dark ? "#ea580c" : "#3b3fa8",
+                                color: "white",
+                            }}
+                        >
+                            {isOpen
+                                ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                                : <svg width="26" height="26" viewBox="0 0 64 64" fill="currentColor">
                                     <rect x="12" y="10" width="40" height="28" rx="8" />
                                     <circle cx="23" cy="24" r="5" fill="white" />
                                     <circle cx="41" cy="24" r="5" fill="white" />
-                                    <circle cx="24" cy="24" r="2.5" fill="#3b82f6" />
-                                    <circle cx="42" cy="24" r="2.5" fill="#3b82f6" />
+                                    <circle cx="24" cy="24" r="2.5" fill="#3b3fa8" />
+                                    <circle cx="42" cy="24" r="2.5" fill="#3b3fa8" />
                                     <rect x="22" y="32" width="20" height="3" rx="1.5" fill="white" opacity="0.8" />
                                     <rect x="28" y="38" width="8" height="5" rx="2" />
                                     <rect x="14" y="43" width="36" height="18" rx="6" />
                                     <rect x="20" y="49" width="8" height="6" rx="2" fill="white" opacity="0.3" />
                                     <rect x="36" y="49" width="8" height="6" rx="2" fill="white" opacity="0.3" />
                                 </svg>
-                                <span className="online-dot" />
-                            </div>
-                            <div>
-                                <div className="brand-name">Pockit Engineers</div>
-                                <div className="brand-badge">● Fast Fix Guaranteed</div>
-                            </div>
-                        </div>
-                        <button className="btn-close" onClick={toggleChat} aria-label="Close chat">
-                            ✕
+                            }
                         </button>
                     </div>
-
-                    <div className="messages-area" ref={messagesAreaRef}>
-                        {messages.length === 0 && (
-                            <div className="empty-state">
-                                <div className="greeting-emoji">{greeting.emoji}</div>
-                                <h2>{greeting.text}!</h2>
-                                <p>I am your Pockit Engineers assistant. How can I help fix your tech today?</p>
-                                <div className="chips-grid">
-                                    {initialChips.map(chip => (
-                                        <button key={chip} className="chip" type="button" onClick={() => sendMessage(chip)}>
-                                            {chip}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {messages.length > 0 && (
-                            <>
-                                {messages.map((msg, index) => (
-                                    <div key={`${msg.type}-${index}-${msg.time}`} className={`msg-row ${msg.type === "user" ? "user-row" : ""}`}>
-                                        {msg.type === "bot" && (
-                                            <div className="msg-avatar bot-av" aria-hidden="true">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 64 64" fill="white">
-                                                    <rect x="12" y="10" width="40" height="28" rx="8" />
-                                                    <circle cx="23" cy="24" r="5" fill="rgba(255,255,255,0.8)" />
-                                                    <circle cx="41" cy="24" r="5" fill="rgba(255,255,255,0.8)" />
-                                                    <circle cx="24" cy="24" r="2.5" fill="#3b82f6" />
-                                                    <circle cx="42" cy="24" r="2.5" fill="#3b82f6" />
-                                                    <rect x="22" y="32" width="20" height="3" rx="1.5" fill="white" opacity="0.8" />
-                                                    <rect x="28" y="38" width="8" height="5" rx="2" />
-                                                    <rect x="14" y="43" width="36" height="18" rx="6" />
-                                                </svg>
-                                            </div>
-                                        )}
-
-                                        <div className="msg-body">
-                                            {msg.isError && (
-                                                <div className="error-banner">
-                                                    <div className="err-title">⚠️ Something went wrong</div>
-                                                    <div className="err-sub">Our AI is temporarily unavailable. Reach us directly:</div>
-                                                    <div className="error-actions">
-                                                        <a href="tel:+919240251266" className="btn-err-call">📞 +91 92402 51266</a>
-                                                        <a href="mailto:itsupport@pockitengineers.com" className="btn-err-email">✉ Email us</a>
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {!msg.isError && (
-                                                <div className={`msg-bubble ${msg.type === "user" ? "user-bubble" : "bot-bubble"}`}>
-                                                    {msg.text}
-                                                </div>
-                                            )}
-
-                                            {msg.type === "bot" && !msg.isError && msg.service && (
-                                                <div className="service-card">
-                                                    <div className="service-card-header">
-                                                        <span>{msg.service.name}</span>
-                                                        <span>ID #{msg.service.id}</span>
-                                                    </div>
-                                                    <div className="service-card-body">
-                                                        {msg.service.price && <span className="service-price">{msg.service.price}</span>}
-                                                        {msg.service.duration && <span className="tag blue">⏱ {msg.service.duration}</span>}
-                                                        {msg.service.mode && (
-                                                            <span className={`tag ${msg.service.mode.includes("Remote") ? "blue" : "orange"}`}>
-                                                                {msg.service.mode}
-                                                            </span>
-                                                        )}
-                                                        {msg.service.warranty && <span className="tag green">✓ {msg.service.warranty}</span>}
-                                                    </div>
-                                                    <div className="service-card-footer">
-                                                        <a className="book-btn" href={`/book?serviceId=${msg.service.id}`}>Book Now →</a>
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {msg.type === "bot" && !msg.isError && msg.showHumanHandoff && (
-                                                <div className="handoff-banner">
-                                                    <div>
-                                                        <p className="handoff-label">Need a human? We are here!</p>
-                                                        <p className="handoff-hours">Mon–Sun · 10 AM–7 PM</p>
-                                                    </div>
-                                                    <div className="handoff-actions">
-                                                        <a href="tel:+919240251266" className="btn-call">📞 Call</a>
-                                                        <a href="mailto:itsupport@pockitengineers.com" className="btn-email">✉ Email</a>
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            <div className="msg-time">{msg.time}</div>
-                                        </div>
-
-                                        {msg.type === "user" && <div className="msg-avatar user-av" aria-hidden="true">👤</div>}
-                                    </div>
-                                ))}
-
-                                {isLoading && (
-                                    <div className="msg-row">
-                                        <div className="msg-avatar bot-av" aria-hidden="true">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 64 64" fill="white">
-                                                <rect x="12" y="10" width="40" height="28" rx="8" />
-                                                <rect x="14" y="43" width="36" height="18" rx="6" />
-                                            </svg>
-                                        </div>
-                                        <div className="msg-body">
-                                            <div className="msg-bubble bot-bubble">
-                                                <div className="typing-dots">
-                                                    <span />
-                                                    <span />
-                                                    <span />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {!isLoading && followUpChips.length > 0 && (
-                                    <div className="chips-grid follow-up-chips">
-                                        {followUpChips.map(chip => (
-                                            <button key={chip} className="chip purple-chip" type="button" onClick={() => sendMessage(chip)}>
-                                                {chip}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                            </>
-                        )}
-                    </div>
-
-                    <div className="input-area">
-                        {isListening && (
-                            <div className="listening-label">
-                                <span className="listening-dot" /> Listening...
-                            </div>
-                        )}
-                        <input
-                            className="chat-input"
-                            type="text"
-                            value={inputText}
-                            onChange={e => setInputText(e.target.value)}
-                            onKeyDown={e => e.key === "Enter" && sendMessage()}
-                            placeholder={controlLabel}
-                            disabled={isLoading}
-                        />
-                        <div className="input-actions">
-                            {speechSupported && (
-                                <button
-                                    className={`btn-icon btn-mic ${isListening ? "listening" : ""}`}
-                                    type="button"
-                                    onClick={toggleListening}
-                                    disabled={isLoading}
-                                    title={isListening ? "Stop" : "Voice input"}
-                                >
-                                    {isListening ? (
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                            <rect x="6" y="6" width="12" height="12" rx="2" />
-                                        </svg>
-                                    ) : (
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M12 1a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v6a2 2 0 1 0 4 0V5a2 2 0 0 0-2-2zm7 8a1 1 0 0 1 1 1 8 8 0 0 1-7 7.938V21h2a1 1 0 1 1 0 2H9a1 1 0 1 1 0-2h2v-1.062A8 8 0 0 1 4 12a1 1 0 1 1 2 0 6 6 0 1 0 12 0 1 1 0 0 1 1-1z" />
-                                        </svg>
-                                    )}
-                                </button>
-                            )}
-                            <button
-                                className="btn-icon btn-send"
-                                type="button"
-                                onClick={() => sendMessage()}
-                                disabled={isLoading || !inputText.trim()}
-                            >
-                                ➤
-                            </button>
-                        </div>
-                    </div>
                 </div>
-            )}
-
-            <div className="toggle-btn-wrap">
-                {!isOpen && <span className="ping-ring" />}
-                {!isOpen && <span className="ping-ring-2" />}
-                {!isOpen && !hasOpened && <span className="notification-dot">1</span>}
-                <button className={`btn-toggle ${isOpen ? "open" : ""}`} type="button" onClick={toggleChat} aria-label={isOpen ? "Close chatbot" : "Open chatbot"}>
-                    {isOpen ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18" />
-                            <line x1="6" y1="6" x2="18" y2="18" />
-                        </svg>
-                    ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 64 64" fill="currentColor">
-                            <rect x="30" y="2" width="4" height="8" rx="2" />
-                            <circle cx="32" cy="2" r="3" />
-                            <rect x="12" y="10" width="40" height="28" rx="8" />
-                            <circle cx="23" cy="24" r="5" fill="white" />
-                            <circle cx="41" cy="24" r="5" fill="white" />
-                            <circle cx="24" cy="24" r="2.5" fill="#3b82f6" />
-                            <circle cx="42" cy="24" r="2.5" fill="#3b82f6" />
-                            <rect x="22" y="32" width="20" height="3" rx="1.5" fill="white" opacity="0.8" />
-                            <rect x="28" y="38" width="8" height="5" rx="2" />
-                            <rect x="14" y="43" width="36" height="18" rx="6" />
-                            <rect x="20" y="49" width="8" height="6" rx="2" fill="white" opacity="0.3" />
-                            <rect x="36" y="49" width="8" height="6" rx="2" fill="white" opacity="0.3" />
-                        </svg>
-                    )}
-                </button>
             </div>
         </div>
     );

@@ -12,7 +12,8 @@ function getFirebaseConfig() {
     };
 
     if (!config.apiKey || !config.projectId || !config.appId) {
-        throw new Error('Missing Firebase config: set NEXT_PUBLIC_FIREBASE_* env vars');
+        console.warn('[Firebase] Missing config; disabling firebase auth (NEXT_PUBLIC_FIREBASE_* env vars not set)');
+        return null;
     }
 
     return config;
@@ -28,7 +29,13 @@ export class FirebaseAuthHelper {
             return;
         }
 
-        this.app = getApps().length ? getApps()[0] : initializeApp(getFirebaseConfig());
+        const config = getFirebaseConfig();
+        if (!config) {
+            console.warn('[Firebase] config not found; firebase auth disabled');
+            return;
+        }
+
+        this.app = getApps().length ? getApps()[0] : initializeApp(config);
         this.auth = getAuth(this.app);
         console.log('[Firebase] Initialized with project:', this.app.options.projectId);
     }

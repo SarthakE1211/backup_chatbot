@@ -362,6 +362,7 @@ export default function Chatbot() {
                                 theme === THEMES.dark
                                     ? "/svg/Orange_chat_icon.svg"
                                     : "/svg/Blue_chat_icon.svg"
+
                             }
                             alt="Pockit Engineers"
                             width={30}

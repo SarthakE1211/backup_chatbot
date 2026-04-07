@@ -444,7 +444,11 @@ export default function Chatbot() {
                         onClick={toggleChat}
                         className="flex items-center gap-0 text-white font-semibold shadow-2xl transition-all duration-300"
                         style={{
-                            padding: expanded || isMobile ? "0px 8px" : "1px",
+                            padding: isMobile
+                                ? "0px 0px"
+                                : expanded
+                                    ? "0px 2px"
+                                    : "0px 1px",
                             borderRadius: 9999,
                             background:
                                 theme === THEMES.dark
@@ -471,7 +475,7 @@ export default function Chatbot() {
 
                         {/* Animated Label */}
                         <AnimatePresence mode="wait">
-                            {(expanded || isMobile) && (
+                            {(expanded && !isMobile) && (
                                 <motion.span
                                     initial={{ width: 0, opacity: 0 }}
                                     animate={{ width: "auto", opacity: 1 }}

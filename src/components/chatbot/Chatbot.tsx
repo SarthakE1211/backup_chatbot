@@ -447,7 +447,7 @@ export default function Chatbot() {
                             padding: isMobile
                                 ? "0px 0px"
                                 : expanded
-                                    ? "0px 2px"
+                                    ? "0px 8px"
                                     : "0px 1px",
                             borderRadius: 9999,
                             background:

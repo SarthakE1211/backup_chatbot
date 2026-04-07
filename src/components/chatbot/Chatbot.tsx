@@ -442,9 +442,9 @@ export default function Chatbot() {
                 >
                     <button
                         onClick={toggleChat}
-                        className="flex items-center gap-2 text-white font-semibold shadow-2xl transition-all duration-300"
+                        className="flex items-center gap-0 text-white font-semibold shadow-2xl transition-all duration-300"
                         style={{
-                            padding: expanded || isMobile ? "0px 8px" : "2px",
+                            padding: expanded || isMobile ? "0px 8px" : "1px",
                             borderRadius: 9999,
                             background:
                                 theme === THEMES.dark

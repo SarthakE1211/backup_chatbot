@@ -5,13 +5,15 @@ import { ChatApiService } from "@/services/chatApiService";
 import { ChatMessage } from "@/services/chatbot.models";
 import Image from "next/image";
 
-const initialChips = [
-    "Laptop is slow",
-    "PC won't start",
-    "Printer not working",
-    "MacBook battery issue",
-    "CCTV camera offline",
+import { motion, AnimatePresence } from "framer-motion";
 
+const initialChips = [
+    'My laptop is slow',
+    'Printer not working',
+    'WiFi is weak',
+    'How much does it cost?',
+    'Book a service',
+    'What areas do you cover?'
 ];
 
 const langMap: Record<string, string> = {
@@ -42,10 +44,22 @@ export default function Chatbot() {
     const [followUpChips, setFollowUpChips] = useState<string[]>([]);
     const [lang] = useState("English");
     const [greetTime] = useState(() => getTime());
-
+    const [expanded, setExpanded] = useState(false);
     const messagesAreaRef = useRef<HTMLDivElement>(null);
     const recognitionRef = useRef<any>(null);
     const [theme, setTheme] = useState(THEMES.light);
+    const [isMobile, setIsMobile] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+
+        const check = () => setIsMobile(window.innerWidth < 768);
+        check();
+
+        window.addEventListener("resize", check);
+        return () => window.removeEventListener("resize", check);
+    }, []);
 
     useEffect(() => {
         if (typeof window === "undefined") return;
@@ -64,7 +78,14 @@ export default function Chatbot() {
 
         return () => obs.disconnect();
     }, []);
-
+    const resetChat = () => {
+        setMessages([]);
+        setInputText("");
+        setFollowUpChips([]);
+        setIsLoading(false);
+        setIsListening(false);
+        setHasOpened(false);
+    };
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -85,7 +106,17 @@ export default function Chatbot() {
 
     const toggleChat = () => {
         if (!isOpen) setHasOpened(true);
-        setIsOpen((prev) => !prev);
+
+        setIsOpen((prev) => {
+            const next = !prev;
+
+            // 👉 Reset FAB expansion when toggling chat
+            if (next === true) {
+                setExpanded(false); // opening
+            }
+
+            return next;
+        });
     };
 
     const toggleListening = () => {
@@ -179,30 +210,34 @@ export default function Chatbot() {
                                 <span className="cbot-online" />
                             </div>
                             <div>
-                                <p className="cbot-name">Chip</p>
+                                <p className="cbot-name">chip.ai</p>
                                 <p className="cbot-sub">Your Personal Tech Assistant</p>
                             </div>
                         </div>
                         <div className="flex flexdirection-row gap-3">
-                            <button className="cbot-close-btn" onClick={() => window.location.reload()} aria-label="Reset">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                            <button
+                                className="cbot-close-btn"
+                                onClick={resetChat}
+                                aria-label="Reset"
+                            >
+                                <svg width="12" height="12" viewBox="0 0 22 22" fill="none">
                                     <path
                                         d="M21 12a9 9 0 1 1-3-6.7"
                                         stroke="currentColor"
-                                        strokeWidth="2"
+                                        strokeWidth="3"
                                         strokeLinecap="round"
                                     />
                                     <polyline
                                         points="21 3 21 9 15 9"
                                         stroke="currentColor"
-                                        strokeWidth="2"
+                                        strokeWidth="3"
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                     />
                                 </svg>
                             </button>
                             <button className="cbot-close-btn" onClick={toggleChat} aria-label="Close">
-                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
                                     <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
                             </button>
@@ -389,58 +424,68 @@ export default function Chatbot() {
                             // className="w-full h-auto"
                             priority
                         />
-                        <span className="cbot-footer-txt">Chip by Pockit · Powered by AI</span>
+                        <span className="cbot-footer-txt">chip.ai by Pockit · Powered by AI</span>
                     </div>
                 </div>
             )}
 
             {/* ── FAB ── */}
-            <div className="cbot-fab-wrap">
-                <div className={`cbot-trigger ${isOpen ? "is-open" : ""}`}>
-                    {/* {!isOpen && <span className="cbot-ping" />}
-                    {!isOpen && <span className="cbot-ping-2" />} */}
-                    {!isOpen && <span className="cbot-fab-label" style={{
-                        background: theme === THEMES.dark ? "#ed793a" : "#0d129c",
-                        color: "white",
-                    }}>Chat with Chip</span>}
-                    <div className="cbot-fab-icon-wrap">
-                        {!isOpen && <span className="cbot-ping" />}
-                        {!isOpen && <span className="cbot-ping-2" />}
-                        {!isOpen && !hasOpened && <span className="cbot-notif" style={{
-                            background: theme === THEMES.dark ? "#ed793a" : "#0d129c",
-                            color: "white",
-                        }}>1</span>}
-                        <button
-                            className={`cbot-fab ${isOpen ? "is-open" : ""}`}
-                            type="button"
-                            onClick={toggleChat}
-                            aria-label={isOpen ? "Close chatbot" : "Open chatbot"}
-                            style={{
-                                background: theme === THEMES.dark ? "#ed793a" : "#0d129c",
-                                color: "white",
-                                width: "48px",
-                                height: "48px",
-                            }}
-                        >
-                            {isOpen
-                                ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-                                : <Image
-                                    src={
-                                        theme === THEMES.dark
-                                            ? "/svg/orange_chat_icon.svg"
-                                            : "/svg/Blue_chat_icon.svg"
-                                    }
-                                    alt="Pockit Engineers"
-                                    width={700}
-                                    height={730}
-                                    className="w-full h-auto"
-                                    priority
-                                />
+            {!isOpen && mounted && (
+                <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                    onMouseEnter={() => setExpanded(true)}
+                    onMouseLeave={() => setExpanded(false)}
+                    className="fixed bottom-20 right-6 z-50"
+                >
+                    <button
+                        onClick={toggleChat}
+                        className="flex items-center gap-2 text-white font-semibold shadow-2xl transition-all duration-300"
+                        style={{
+                            padding: expanded || isMobile ? "0px 8px" : "2px",
+                            borderRadius: 9999,
+                            background:
+                                theme === THEMES.dark
+                                    ? "linear-gradient(135deg, #ed793a, #ea580c)" // 🔶 orange gradient
+                                    : "linear-gradient(135deg, #0d129c, #3b3fa8)", // 🔵 blue gradient
+                            boxShadow:
+                                theme === THEMES.dark
+                                    ? "0 8px 32px rgba(237, 121, 58, 0.45), 0 0 0 4px rgba(237, 121, 58, 0.08)"
+                                    : "0 8px 32px rgba(13, 18, 156, 0.45), 0 0 0 4px rgba(13, 18, 156, 0.08)"
+                        }}
+                    >
+                        {/* Logo */}
+                        <Image
+                            src={
+                                theme === THEMES.dark
+                                    ? "/svg/orange_chat_icon.svg"
+                                    : "/svg/Blue_chat_icon.svg"
                             }
-                        </button>
-                    </div>
-                </div>
-            </div>
+                            alt="chip.ai"
+                            width={48}
+                            height={48}
+                            className="object-contain"
+                        />
+
+                        {/* Animated Label */}
+                        <AnimatePresence mode="wait">
+                            {(expanded || isMobile) && (
+                                <motion.span
+                                    initial={{ width: 0, opacity: 0 }}
+                                    animate={{ width: "auto", opacity: 1 }}
+                                    exit={{ width: 0, opacity: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="text-[14px] whitespace-nowrap overflow-hidden"
+                                >
+                                    Chat with chip.ai
+                                </motion.span>
+                            )}
+                        </AnimatePresence>
+                    </button>
+                </motion.div>
+            )}
         </div>
     );
 }

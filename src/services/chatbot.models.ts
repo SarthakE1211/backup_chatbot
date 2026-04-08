@@ -1,25 +1,19 @@
-export interface ServiceInfo {
-    id: number;
-    name: string;
-    price?: string;
-    duration?: string;
-    mode?: string;
-    warranty?: string;
-}
+// ── chatbot.models.ts ─────────────────────────────────────────────────────────
 
 export interface ChatMessage {
     type: 'user' | 'bot';
     text: string;
     time: string;
-    service?: ServiceInfo | null;
-    showHumanHandoff?: boolean;
     isError?: boolean;
-}
-
-export interface ChatApiResponse {
-    message: string;
-    service?: ServiceInfo | null;
-    followUpChips?: string[];
+    isStreaming?: boolean;   // true while token-streaming is in progress
+    service?: {
+        id: string | number;
+        name: string;
+        price?: string;
+        duration?: string;
+        mode?: string;
+        warranty?: string;
+    } | null;
     showHumanHandoff?: boolean;
 }
 
@@ -28,20 +22,9 @@ export interface ChatHistoryItem {
     text: string;
 }
 
-export interface ChatRequestBody {
+export interface ChatApiResponse {
     message: string;
-    lang: string;
-    history: ChatHistoryItem[];
-    clientId?: string;
-}
-
-export interface WsChatEvent {
-    type: 'chunk' | 'done' | 'error' | 'service' | 'handoff' | 'session' | 'message';
-    text?: string;
-    content?: string;
-    role?: string;
-    session_id?: string;
-    service?: ServiceInfo;
+    service?: ChatMessage['service'];
     followUpChips?: string[];
     showHumanHandoff?: boolean;
 }

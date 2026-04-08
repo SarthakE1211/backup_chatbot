@@ -114,6 +114,19 @@ export default function Chatbot() {
         return () => { recognitionRef.current?.stop?.(); };
     }, []);
 
+    // ── REST fallback: show greeting immediately when chat opens ───────────────
+    useEffect(() => {
+        if (!WS_ENABLED && isOpen && messages.length === 0) {
+            setMessages([{
+                type: 'bot',
+                text: GREETING,
+                time: getTime(),
+                isError: false,
+            }]);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen]);
+
     // ── WebSocket: connect when chat opens, disconnect when it closes ──────────
     useEffect(() => {
         if (!WS_ENABLED) return;
@@ -129,6 +142,13 @@ export default function Chatbot() {
                 onSession: (sid) => {
                     console.log('[Chatbot] Session ID:', sid);
                     setSessionId(sid);
+                    // ── Show greeting as first bot message when session is ready ──
+                    // setMessages([{
+                    //     type: 'bot',
+                    //     text: GREETING,
+                    //     time: getTime(),
+                    //     isError: false,
+                    // }]);
                 },
 
                 // ── Streaming partial token ────────────────────────────────
@@ -391,7 +411,7 @@ export default function Chatbot() {
                                 <span className="cbot-online" />
                             </div>
                             <div>
-                                <p className="cbot-name">chip.ai <WsIndicator /></p>
+                                <p className="cbot-name">chip.ai</p>
                                 <p className="cbot-sub">Your Personal Tech Assistant</p>
                             </div>
                         </div>
@@ -413,25 +433,15 @@ export default function Chatbot() {
                     {/* ── Messages ── */}
                     <div className="cbot-messages" ref={messagesAreaRef}>
 
-                        {messages.length === 0 && (
-                            <>
-                                <div className="cbot-chips-grid">
-                                    {initialChips.map(chip => (
-                                        <button key={chip} className="cbot-chip" type="button" onClick={() => sendMessage(chip)}>
-                                            {chip}
-                                        </button>
-                                    ))}
-                                </div>
-                                <hr className="cbot-divider" />
-                                <div className="cbot-row">
-                                    <div className="cbot-msg-av"><PELogo size={15} /></div>
-                                    <div className="cbot-body">
-                                        <div className="cbot-bubble cbot-bot-bubble">{GREETING}</div>
-                                        <span className="cbot-time">{greetTime}</span>
-                                    </div>
-                                </div>
-                            </>
-                        )}
+                        {/* ── Initial chips — always visible at the top ── */}
+                        <div className="cbot-chips-grid">
+                            {initialChips.map(chip => (
+                                <button key={chip} className="cbot-chip" type="button" onClick={() => sendMessage(chip)}>
+                                    {chip}
+                                </button>
+                            ))}
+                        </div>
+                        <hr className="cbot-divider" />
 
                         {messages.map((msg, i) => (
                             <div key={i} className={`cbot-row ${msg.type === "user" ? "cbot-user-row" : ""}`}>

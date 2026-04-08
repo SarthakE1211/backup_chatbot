@@ -206,6 +206,12 @@ export class ChatApiService {
         // Close any stale socket first
         ChatApiService.closeWebSocket();
 
+        // ── Scoped here so it resets correctly on every reconnect ─────────────
+        // Tracks whether the backend's initial greeting has been swallowed.
+        // The UI already shows its own hardcoded greeting, so we skip the first
+        // { type: "message", role: "assistant" } that the backend sends on connect.
+        let initialGreetingSwallowed = false;
+
         let token = '';
         try {
             token = await firebaseAuthHelper.getIdToken();
@@ -230,7 +236,7 @@ export class ChatApiService {
 
             callbacks.onOpen?.();
 
-            // 🔥 SEND TOKEN AFTER CONNECT (NEW)
+            // Send auth token after connect
             if (token) {
                 ws.send(JSON.stringify({
                     type: "auth",
@@ -300,6 +306,13 @@ export class ChatApiService {
                 // ── Backend greeting or full message (non-streaming) ─────────
                 case 'message':
                     if (data.role === 'assistant') {
+                        // Swallow only the very first message after connect —
+                        // that is the backend greeting; the UI shows its own.
+                        if (!initialGreetingSwallowed) {
+                            initialGreetingSwallowed = true;
+                            console.log('[WS] Initial backend greeting suppressed');
+                            break;
+                        }
                         callbacks.onDone(ChatApiService.shapeResponse({ message: data.content }));
                     }
                     break;
